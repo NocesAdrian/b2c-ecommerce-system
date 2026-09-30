@@ -1,0 +1,3 @@
+accent = neon violet
+primary = white
+secondary = gray

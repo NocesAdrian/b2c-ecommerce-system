@@ -1,0 +1,57 @@
+roles
+    - id PK
+    - name
+    - description
+    - date_created
+
+users
+    - id PK
+    - role_id FK DEFAULT 2 COMMENT '1 = admin, 2 = customer'
+    - first_name
+    - last_name
+    - location
+    - password_hash
+    - date_updated
+    - date_created
+
+categories
+    - id PK
+    - name
+    - date_created
+
+products
+    - id PK
+    - category_id FK
+    - name
+    - description
+    - unit_price
+    - stocks
+    - date_updated
+    - date_created
+
+carts
+    - id PK
+    - user_id FK
+    - date_created
+    UNIQUE (user_id)
+
+cart_items
+    - cart_id FK
+    - product_id FK
+    - quantity
+    - date_updated
+    PK (cart_id, product_id)
+
+orders
+    - id PK
+    - user_id FK
+    - status DEFAULT 'pending' COMMENT 'pending, processing, shipped, delivered'
+    - total
+    - date_created
+    
+order_items
+    - order_id FK
+    - product_id FK
+    - quantity
+    - unit_price
+    PK (order_id, product_id)
