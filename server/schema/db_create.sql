@@ -19,12 +19,15 @@ CREATE TABLE users (
         COMMENT '1 = admin, 2 = customer',
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    location VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    remember_me_token_hash VARCHAR(255) NULL,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
+
+CREATE INDEX idx_remember_me_token_hash
+ON users (remember_me_token_hash);
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,6 +44,8 @@ CREATE TABLE products (
     stocks INT NOT NULL DEFAULT 0,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CHECK (unit_price > 0),
+    CHECK (stocks >= 0),
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
@@ -61,14 +66,28 @@ CREATE TABLE cart_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+CREATE TABLE saved_locations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    location_id INT NOT NULL,
     status VARCHAR(30) NOT NULL DEFAULT 'pending' 
         COMMENT 'pending, processing, shipped, delivered',
+    payment_method VARCHAR(30) NOT NULL DEFAULT 'cash on delivery'
+        COMMENT 'cash on delivery, online payment',
+    payment_status VARCHAR(30) NOT NULL DEFAULT 'unpaid'
+        COMMENT 'unpaid, paid',
     total DECIMAL(10, 2) NOT NULL,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (location_id) REFERENCES saved_locations(id)
 );
 
 CREATE TABLE order_items (
