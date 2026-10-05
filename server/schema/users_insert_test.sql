@@ -1,19 +1,19 @@
-USE b2c_ecommerce;
+USE b2c_ecommerce_db;
 
 INSERT INTO users (
     role_id,
-    first_name,
-    last_name,
-    location,
-    password_hash
-) VALUES
-(1, 'John', 'Carter', 'Manila', 'hashed_password_001'),
-(1, 'Maria', 'Santos', 'Quezon City', 'hashed_password_002'),
-(1, 'James', 'Reyes', 'Cebu City', 'hashed_password_003'),
-(1, 'Anna', 'Garcia', 'Davao City', 'hashed_password_004'),
-(1, 'Mark', 'Cruz', 'Pasig', 'hashed_password_005'),
-(1, 'Sofia', 'Mendoza', 'Makati', 'hashed_password_006'),
-(1, 'Daniel', 'Torres', 'Taguig', 'hashed_password_007'),
-(1, 'Lisa', 'Ramos', 'Caloocan', 'hashed_password_008'),
-(1, 'Kevin', 'Flores', 'Antipolo', 'hashed_password_009'),
-(2, 'Michael', 'Anderson', 'Manila', 'hashed_password_admin');
+    username,
+    password_hash,
+    remember_me_token_hash
+)
+VALUES
+(2, 'John', 'hashed_password_002', NULL),
+(2, 'Maria', 'hashed_password_002', NULL),
+(2, 'James', 'hashed_password_003', NULL),
+(2, 'Anna', 'hashed_password_004', NULL),
+(2, 'Mark', 'hashed_password_005', NULL),
+(2, 'Sofia', 'hashed_password_006', NULL),
+(2, 'Daniel', 'hashed_password_007', NULL),
+(1, 'Lisa', 'hashed_password_008', NULL),
+(2, 'Kevin', 'hashed_password_009', NULL),
+(2, 'Michael', 'hashed_password_admin', NULL);

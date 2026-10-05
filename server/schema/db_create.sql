@@ -1,15 +1,15 @@
-DROP DATABASE IF EXISTS b2c_ecommerce;
+DROP DATABASE IF EXISTS b2c_ecommerce_db;
 
-CREATE DATABASE b2c_ecommerce
+CREATE DATABASE b2c_ecommerce_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE b2c_ecommerce;
+USE b2c_ecommerce_db;
 
 CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    description TEXT,
+    description TEXT NULL,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -17,10 +17,9 @@ CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_id INT NOT NULL DEFAULT 2 
         COMMENT '1 = admin, 2 = customer',
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    remember_me_token_hash VARCHAR(255) NULL,
+    remember_me_token_hash CHAR(64) NULL,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(id)

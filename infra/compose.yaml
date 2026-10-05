@@ -1,0 +1,71 @@
+networks:
+  backend_network:
+
+services:
+
+  server:
+
+    build:
+      context: ${SERVER_CONTEXT_PATH}
+      dockerfile: ${SERVER_DOCKERFILE_PATH}
+
+    working_dir: ${SERVER_WORKDIR}
+
+    volumes:
+      - ${SERVER_MOUNTDIR}
+
+    ports: 
+      - ${SERVER_MOUNTPORT_1}
+
+    depends_on:
+      - database
+      
+    networks:
+      - backend_network
+
+  database:
+
+    image: ${DATABASE_IMAGE}
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_DATABASE}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+
+    volumes:
+      - ${DATABASE_MOUNTDIR}
+
+    networks:
+      - backend_network
+
+  adminer:
+
+    image: ${ADMINER_IMAGE}
+
+    ports:
+      - ${ADMINER_MOUNTPORT_1}
+
+    depends_on:
+      - database
+
+    networks:
+      - backend_network
+
+  phpmyadmin:
+
+    image: ${PHPMYADMIN_IMAGE}
+
+    ports:
+      - ${PHPMYADMIN_MOUNTPORT_1}
+
+    environment:
+      PMA_HOST: database
+      PMA_PORT: ${DATABASE_PORT}
+
+    depends_on: 
+      - database
+    
+    networks:
+      - backend_network
+
