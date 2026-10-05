@@ -4,4 +4,4 @@ set -e
 
 cd infra
 cp .env.example .env
-cd ..
+./scripts/on.sh

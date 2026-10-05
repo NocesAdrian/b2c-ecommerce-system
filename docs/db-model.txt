@@ -26,6 +26,7 @@ products
     - description
     - unit_price CHECK (> 0)
     - stocks DEFAULT 0 CHECK (>= 0)
+    - image_path
     - date_updated
     - date_created
 

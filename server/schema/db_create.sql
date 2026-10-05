@@ -41,6 +41,7 @@ CREATE TABLE products (
     description TEXT,
     unit_price DECIMAL(10, 2) NOT NULL,
     stocks INT NOT NULL DEFAULT 0,
+    image_path VARCHAR(255) NULL,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHECK (unit_price > 0),

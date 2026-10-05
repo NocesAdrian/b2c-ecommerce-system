@@ -12,11 +12,6 @@ class UserRepository extends BaseRepository
         ?string $remember_me_token_hash = null
     ) : array
     {
-        if (empty($username) || empty($password_hash)) {
-            return [
-                "error" => "Failed to create user"
-            ];
-        }
         try {
 
             $stmt = $this->db->prepare("
@@ -39,7 +34,8 @@ class UserRepository extends BaseRepository
             ]);
 
             return [
-                "id" => (int)$this->db->lastInsertId()
+                "id" => (int)$this->db->lastInsertId(),
+                "state" => 0
             ];
 
         } catch(PDOException $e) {
@@ -47,7 +43,8 @@ class UserRepository extends BaseRepository
             http_response_code(500);
 
             return [
-                "error" => "Failed to create user"
+                "error" => "Failed to create user",
+                "state" => -1
             ];
         }
     }
