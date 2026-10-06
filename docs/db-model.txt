@@ -9,10 +9,16 @@ users
     - role_id FK DEFAULT 2 COMMENT '1 = admin, 2 = customer'
     - username UNIQUE
     - password_hash
-    - remember_me_token_hash
     - date_updated
     - date_created
-    - INDEX (remember_me_token_hash)
+
+sessions
+    - id PK
+    - user_id FK
+    - token_hash UNIQUE
+    - remember_me
+    - expire_at
+    - date_created
 
 categories
     - id PK

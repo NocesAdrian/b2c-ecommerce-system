@@ -19,14 +19,19 @@ CREATE TABLE users (
         COMMENT '1 = admin, 2 = customer',
     username VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    remember_me_token_hash CHAR(64) NULL,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
-CREATE INDEX idx_remember_me_token_hash
-ON users (remember_me_token_hash);
+CREATE TABLE sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    remember_me BOOLEAN DEFAULT false,
+    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -35,7 +35,7 @@ class UserRepository extends BaseRepository
 
             return [
                 "id" => (int)$this->db->lastInsertId(),
-                "state" => 0
+                "status" => 0
             ];
 
         } catch(PDOException $e) {
@@ -44,7 +44,129 @@ class UserRepository extends BaseRepository
 
             return [
                 "error" => "Failed to create user",
-                "state" => -1
+                "status" => -1
+            ];
+        }
+    }
+
+    public function updateByID(
+        int $id,
+        int $role_id,
+        string $username
+    ) : array
+    {
+        try {
+
+            $stmt = $this->db->prepare("
+                UPDATE users SET
+                    role_id = :role_id,
+                    username = :username
+                WHERE id = :id;
+            ");
+
+            $stmt->execute([
+                "role_id" => $role_id,
+                "username" => $username,
+                "id" => $id
+            ]);
+
+            return [
+                "id" => $id,
+                "status" => 0
+            ];
+
+        } catch(PDOException $e) {
+
+            http_response_code(500);
+
+            return [
+                "error" => "Failed to update record",
+                "status" => -1
+            ];
+        }
+    }
+
+    public function updatePassword(
+        int $id,
+        string $password_hash
+    ): array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE users
+                SET password_hash = :password_hash
+                WHERE id = :id;
+            ");
+
+            $stmt->execute([
+                "password_hash" => $password_hash,
+                "id" => $id
+            ]);
+
+            return [
+                "id" => $id,
+                "status" => 0
+            ];
+        } catch (PDOException $e) {
+            http_response_code(500);
+
+            return [
+                "error" => "Failed to update password",
+                "status" => -1
+            ];
+        }
+    }
+
+    public function getEssential() : array
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT id, role_id, username FROM users;");
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+
+        } catch(PDOException $e) {
+
+            http_response_code(500);
+
+            return [
+                "error" => "Failed to retrieve records"
+            ];
+        }
+    }
+
+    public function getCustomers() : array
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT id, role_id, username FROM users WHERE role_id = 2;");
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+
+        } catch(PDOException $e) {
+
+            http_response_code(500);
+
+            return [
+                "error" => "Failed to retrieve records"
+            ];
+        }
+    }
+
+    public function getAdmin() : array
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT id, role_id, username FROM users WHERE role_id = 1;");
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+
+        } catch(PDOException $e) {
+
+            http_response_code(500);
+
+            return [
+                "error" => "Failed to retrieve records"
             ];
         }
     }
