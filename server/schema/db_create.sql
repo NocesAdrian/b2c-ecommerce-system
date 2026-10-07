@@ -29,7 +29,7 @@ CREATE TABLE sessions (
     user_id INT NOT NULL,
     token_hash CHAR(64) NOT NULL UNIQUE,
     remember_me BOOLEAN DEFAULT false,
-    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expire_at DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -72,7 +72,7 @@ CREATE TABLE cart_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE saved_locations (
+CREATE TABLE delivery_locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     location VARCHAR(255) NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE orders (
     total DECIMAL(10, 2) NOT NULL,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (location_id) REFERENCES saved_locations(id)
+    FOREIGN KEY (location_id) REFERENCES delivery_locations(id)
 );
 
 CREATE TABLE order_items (

@@ -7,12 +7,14 @@ $requested_route = $config["requested_route"];
 $service_path = $config["services_path"];
 
 require_once $service_path."users.php";
+require_once $service_path."auth.php";
 $users = new UserRepository($db_path);
+$auth = new Auth($db_path);
 
 switch ($requested_route) {
     case "/api/users":
         $body = json_decode(file_get_contents("php://input"), true);
-        $users->authAdmin($body);
+        $auth->admin($body);
         echo json_encode($users->getEssential());
         exit(0);
 
@@ -63,14 +65,14 @@ switch ($requested_route) {
 
     case "/api/users/customers":
         $body = json_decode(file_get_contents("php://input"), true);
-        $users->authAdmin($body);
+        $auth->admin($body);
 
         echo json_encode($users->getCustomers());
         exit(0);
 
     case "/api/users/admin":
         $body = json_decode(file_get_contents("php://input"), true);
-        $users->authAdmin($body);
+        $auth->admin($body);
         
         echo json_encode($users->getAdmin());
         exit(0);
@@ -86,7 +88,7 @@ if (preg_match("#^/api/users/([0-9]+)$#", $requested_route, $matches)) {
 
     $body = json_decode(file_get_contents("php://input"), true);
     
-    $users->authAdmin($body);
+    $auth->admin($body);
 
     $result = $users->getByID($id, "users");
 
@@ -102,7 +104,7 @@ if (preg_match("#^/api/users/delete/([0-9]+)$#", $requested_route, $matches)) {
 
     $body = json_decode(file_get_contents("php://input"), true);
     
-    $users->authUserAdmin($id, $body);
+    $auth->ownerAdmin($id, $body);
 
     $result = $users->deleteByID($id, "users");
     
@@ -121,7 +123,7 @@ if (preg_match("#^/api/users/update/([0-9]+)$#", $requested_route, $matches)) {
     $role_id = $body["role_id"] ?? '';
     $username = $body["username"] ?? '';
     
-    $users->authAdmin($body);
+    $auth->admin($body);
 
     if ($username === '') {
         http_response_code(400);
@@ -145,7 +147,7 @@ if (preg_match("#^/api/users/update/password/([0-9]+)$#", $requested_route, $mat
     $body = json_decode(file_get_contents("php://input"), true);
     $password = $body["password"] ?? '';
 
-    $users->authUserAdmin($id, $body);
+    $auth->ownerAdmin($id, $body);
 
     if ($password === '') {
         http_response_code(400);

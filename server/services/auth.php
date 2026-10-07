@@ -4,9 +4,10 @@ $config = getConfig();
 $service_path = $config["services_path"];
 require_once $service_path."base.php";
 
-class AUTH extends BaseRepository 
+class Auth extends BaseRepository 
 {
 
+    // TODO move to SessionRepository
     public function getByToken(
         string $token_hash
     ) : array | false

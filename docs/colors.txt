@@ -1,3 +1,7 @@
-accent = neon violet
-primary = white
-secondary = gray
+Accent      = antique brown
+Primary     = white
+Secondary   = gray
+
+Accent      = #806A4F
+Primary     = #FFFFFF
+Secondary   = #f6f5f4
