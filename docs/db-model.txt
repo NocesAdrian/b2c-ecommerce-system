@@ -48,7 +48,7 @@ cart_items
     - date_updated
     - PK (cart_id, product_id)
 
-delivery_location
+delivery_locations
     - id PK
     - user_id FK
     - location
