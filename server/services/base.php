@@ -4,13 +4,43 @@ class BaseRepository
 {
     protected PDO $db;
     protected string $table;
-    protected array $allowed_tables = [];
+    protected array $allowed_tables = [
+        "users",
+        "products",
+        "orders",
+        "carts",
+        "order_items",
+        "cart_items",
+        "delivery_location",
+        "roles",
+        "sessions",
+        "categories"
+    ];
     protected array $allowed_fields = [];
     protected array $allowed_operators = ["=", "!=", ">", "<", ">=", "<="];
 
-    public function __construct(string $db_path)
+    protected string $image_path;
+
+    public function __construct(string $db_path, ?string $storage_path = null)
     {
         $this->db = require $db_path;
+
+        if ($storage_path !== null) $this->image_path = $storage_path.$this->table."/images/";
+    }
+
+    public function exist(int $id) : bool {
+        $stmt = $this->db->prepare("
+            SELECT count(*) AS count FROM ".$this->table."
+            WHERE id = :id;
+        ");
+
+        $stmt->execute([
+            "id" => $id
+        ]);
+
+        $record = $stmt->fetch();
+
+        return (int)$record["count"] > 0;
     }
 
     public function validateFields(array $fields) : void
@@ -19,10 +49,26 @@ class BaseRepository
         {
             if(!in_array($field, $this->allowed_fields, true)) 
             {
-                http_response_code(404);
+                http_response_code(400);
                 echo json_encode
                 ([
-                    "error" => "Field not found"
+                    "error" => "Invalid request"
+                ]);
+                exit(-1);
+            }
+        }
+    }
+
+    public function validateTables(array $tables) : void
+    {
+        foreach ($tables as $table) 
+        {
+            if(!in_array($table, $this->allowed_tables, true)) 
+            {
+                http_response_code(400);
+                echo json_encode
+                ([
+                    "error" => "Invalid request"
                 ]);
                 exit(-1);
             }
@@ -33,16 +79,16 @@ class BaseRepository
     {
         if(!in_array($operator, $this->allowed_operators, true)) 
         {
-            http_response_code(404);
+            http_response_code(400);
             echo json_encode
             ([
-                "error" => "operator not found"
+                "error" => "Invalid request"
             ]);
             exit(-1);
         }
     }
 
-    public function validateString(string $string) : void
+    public function validateString(string $string) : string
     {
         if (trim($string) === '')
         {
@@ -50,10 +96,123 @@ class BaseRepository
 
             echo json_encode
             ([
-                "error" => "Invalid Request"
+                "error" => "Invalid request"
             ]);
             exit(-1);
         }
+        
+        return trim($string);
+    }
+
+    public function validateInt(mixed $value): int
+    {
+        $validated = filter_var($value, FILTER_VALIDATE_INT);
+
+        if ($validated === false || $validated < 0) {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid integer"]);
+            exit;
+        }
+
+        return $validated;
+    }
+
+    public function validateJsonBody(mixed $array) : void
+    {
+        if (!is_object($array))
+        {
+            http_response_code(400);
+
+            echo json_encode
+            ([
+                "error" => "Invalid request"
+            ]);
+            exit(-1);
+        }
+    }
+
+    public function validateID(mixed $id_to_validate, string $table): int
+    {
+        if (filter_var($id_to_validate, FILTER_VALIDATE_INT) === false) {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid request"]);
+            exit(-1);
+        }
+
+        $id_to_validate = (int)$id_to_validate;
+
+        if (!is_int($id_to_validate) || $id_to_validate < 1) {
+            http_response_code(400);
+
+            echo json_encode([
+                "error" => "Invalid request"
+            ]);
+
+            exit(-1);
+        }
+
+        $this->validateTables([$table]);
+
+        $stmt = $this->db->prepare("
+            SELECT count(*) AS count FROM ".$table."
+            WHERE id = :id;
+        ");
+
+        $stmt->execute([
+            "id" => $id_to_validate
+        ]);
+
+        $record = $stmt->fetch();
+
+        if ((int)$record["count"] === 0)
+        {
+            http_response_code(400);
+
+            echo json_encode([
+                "error" => "Invalid request"
+            ]);
+
+            exit(-1);
+        }
+
+        return $id_to_validate;
+    }
+
+    public function validateImage(mixed $image): bool
+    {
+        if ($image === null) return false;
+
+        if (
+            !is_array($image) ||
+            !isset($image["error"], $image["tmp_name"], $image["size"]) ||
+            $image["error"] !== UPLOAD_ERR_OK ||
+            !is_uploaded_file($image["tmp_name"]) ||
+            $image["size"] <= 0 ||
+            $image["size"] > 5 * 1024 * 1024
+        ) 
+        {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid image upload"]);
+            exit;
+        }
+
+        $imageInfo = getimagesize($image["tmp_name"]);
+
+        if (
+            $imageInfo === false ||
+            !in_array($imageInfo[2], [
+                IMAGETYPE_JPEG,
+                IMAGETYPE_PNG,
+                IMAGETYPE_WEBP,
+            ], true)
+        ) 
+        {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid image type"]);
+            exit;
+        }
+
+        return true;
     }
 
     public function numberMatches(array $arr1, array $arr2) : void
@@ -63,13 +222,13 @@ class BaseRepository
             http_response_code(400);
             echo json_encode
             ([
-                "error" => "not match"
+                "error" => "Invalid request"
             ]);
             exit(-1);
         }
     }
 
-    public function insert(array $fields, array $values) : void 
+    public function insert(array $fields, array $values) : array 
     {
         $this->numberMatches($fields, $values);
         $this->validateFields($fields);
@@ -99,14 +258,12 @@ class BaseRepository
 
         $stmt->execute($params);
 
-        echo json_encode([
+        return [
             "affected_rows" => (int)$stmt->rowCount()
-        ]);
-
-        exit(0);
+        ];
     }
 
-    public function update(array $fields, array $values, int $id_to_update) : void
+    public function update(array $fields, array $values, int $id_to_update) : array
     {
         $this->numberMatches($fields, $values);
         $this->validateFields($fields);
@@ -137,14 +294,12 @@ class BaseRepository
 
         $stmt->execute($params);
 
-        echo json_encode([
+        return [
             "affected_rows" => (int)$stmt->rowCount()
-        ]);
-
-        exit(0);
+        ];
     }
 
-    public function delete(int $id_to_delete) : void 
+    public function delete(int $id_to_delete) : array 
     {
         
         $stmt = $this->db->prepare
@@ -156,11 +311,50 @@ class BaseRepository
             "id" => $id_to_delete
         ]);
 
-        echo json_encode([
+        return [
             "affected_rows" => (int)$stmt->rowCount()
-        ]);
+        ];
+    }
 
-        exit(0);
+    public function storeImage(mixed $image): string
+    {
+        $imageInfo = getimagesize($image["tmp_name"]);
+
+        $extension = match ($imageInfo[2]) {
+            IMAGETYPE_JPEG => "jpg",
+            IMAGETYPE_PNG  => "png",
+            IMAGETYPE_WEBP => "webp",
+        };
+
+        if (!is_dir($this->image_path)) {
+            mkdir($this->image_path, 0755, true);
+        }
+
+        $filename = bin2hex(random_bytes(16)) . "." . $extension;
+        $destination = $this->image_path . $filename;
+
+        if (!move_uploaded_file($image["tmp_name"], $destination)) {
+            http_response_code(500);
+            echo json_encode(["error" => "Internal Server Error"]);
+            exit;
+        }
+
+        return $this->getImagePath() . $filename;
+    }
+
+    public function deleteImage(string $image_path): void
+    {
+        if (is_file($image_path)) {
+            unlink($image_path);
+        }
+    }
+
+    public function getJsonBody() : array
+    {
+        $body = json_decode(file_get_contents("php://input"));
+        $this->validateJsonBody($body);
+
+        return (array)$body;
     }
 
     public function getAll() : array
@@ -168,8 +362,7 @@ class BaseRepository
         $stmt = $this->db->prepare("SELECT * FROM ".$this->table.";");
         $stmt->execute();
 
-        echo json_encode($stmt->fetchAll());
-        exit(0);
+        return $stmt->fetchAll();
     }
 
     public function get(int $id) : array
@@ -180,11 +373,32 @@ class BaseRepository
             "id" => $id
         ]);
 
-        echo json_encode($stmt->fetch());
-        exit(0);
+        $record = $stmt->fetch();
+
+        if ($record === false) {
+            http_response_code(404);
+            echo json_encode(["error" => "Record not found"]);
+            exit;
+        }
+
+        return $record;
     }
 
-    public function getCondition(array $fields, array $condition) : void
+    public function getSelected(array $fields) : array
+    {  
+        $this->validateFields($fields);
+        $join_fields = implode(",", $fields);
+
+        $stmt = $this->db->prepare("
+            SELECT ".$join_fields." 
+            FROM ".$this->table.";
+        ");
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function getCondition(array $fields, array $condition) : array
     {  
         $this->validateFields($fields);
         $this->validateFields([$condition[0]]);
@@ -202,8 +416,12 @@ class BaseRepository
             $condition[0] => $condition[1]
         ]);
 
-        echo json_encode($stmt->fetchAll());
-        exit(0);
+        return $stmt->fetchAll();
+    }
+
+    public function getImagePath() : string 
+    {
+        return $this->image_path;    
     }
 }
 

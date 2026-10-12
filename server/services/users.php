@@ -8,7 +8,8 @@ class UserRepository extends BaseRepository
 {
     protected string $table = "users";
 
-    protected array $allowed_fields = [
+    protected array $allowed_fields = 
+    [
         "id",
         "role_id",
         "username",
@@ -16,5 +17,21 @@ class UserRepository extends BaseRepository
         "date_updated",
         "date_created"
     ];
+
+    public function usernameExist(string $username) : bool 
+    {
+        $stmt = $this->db->prepare("
+            SELECT count(*) AS count FROM ".$this->table."
+            WHERE username = :username;
+        ");
+
+        $stmt->execute([
+            "username" => $username
+        ]);
+
+        $record = $stmt->fetch();
+
+        return (int)$record["count"] > 0;
+    }
 }
 ?>
