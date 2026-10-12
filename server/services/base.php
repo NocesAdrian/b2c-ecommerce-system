@@ -1,8 +1,15 @@
 <?php
+$config = getConfig();
+
+$service_path = $config["services_path"];
+
+require_once $service_path."sessions.php";
 
 class BaseRepository 
 {
     protected PDO $db;
+    // protected SessionRepository $sessions;
+
     protected string $table;
     protected array $allowed_tables = [
         "users",
@@ -24,6 +31,7 @@ class BaseRepository
     public function __construct(string $db_path, ?string $storage_path = null)
     {
         $this->db = require $db_path;
+        //$this->sessions = new SessionRepository($db_path);
 
         if ($storage_path !== null) $this->image_path = $storage_path.$this->table."/images/";
     }
@@ -88,9 +96,9 @@ class BaseRepository
         }
     }
 
-    public function validateString(string $string) : string
+    public function validateString(mixed $string) : string
     {
-        if (trim($string) === '')
+        if (!is_string($string) || trim($string) === '')
         {
             http_response_code(400);
 
@@ -102,6 +110,22 @@ class BaseRepository
         }
         
         return trim($string);
+    }
+
+    public function validateBool(mixed $value) : bool
+    {
+        if (!is_bool($value))
+        {
+            http_response_code(400);
+
+            echo json_encode
+            ([
+                "error" => "Invalid request"
+            ]);
+            exit(-1);
+        }
+        
+        return $value;
     }
 
     public function validateInt(mixed $value): int
@@ -253,7 +277,9 @@ class BaseRepository
 
         foreach($fields as $index => $field)
         {
-            $params[$field] = $values[$index];
+            $params[$field] = is_bool($values[$index])
+                ? (int)$values[$index]
+                : $values[$index];
         };
 
         $stmt->execute($params);

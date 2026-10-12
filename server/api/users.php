@@ -29,7 +29,7 @@ switch ($requested_route) {
         $password = $body["password"] ?? '';
 
         $username = $users->validateString($username);
-        $password = $users->validateString($password);
+        $password = $users->validatePassword($password);
 
         if ($users->usernameExist($username)) {
             echo json_encode([

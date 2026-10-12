@@ -33,5 +33,20 @@ class UserRepository extends BaseRepository
 
         return (int)$record["count"] > 0;
     }
+   
+    public function validatePassword(mixed $password): string
+    {
+        if (!is_string($password) || $password === '') {
+            http_response_code(400);
+
+            echo json_encode([
+                "error" => "Invalid or missing password"
+            ]);
+
+            exit;
+        }
+
+        return $password;
+    }
 }
 ?>

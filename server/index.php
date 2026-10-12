@@ -4,6 +4,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 set_exception_handler(function (Throwable $e) {
+    error_log((string) $e);
     http_response_code(500);
     echo json_encode([
         "error" => "Internal Server Error"
@@ -17,6 +18,7 @@ require_once __DIR__."/api/root.php";
 require_once __DIR__."/api/users.php";
 require_once __DIR__."/api/categories.php";
 require_once __DIR__."/api/products.php";
+require_once __DIR__."/api/auth.php";
 // require_once __DIR__."/api/carts.php";
 // require_once __DIR__."/api/orders.php";
 // require_once __DIR__."/api/categories.php";
