@@ -49,7 +49,6 @@ cart_items
     - PK (cart_id, product_id)
 
 delivery_locations
-    - id PK
     - user_id FK
     - location
     - date_created

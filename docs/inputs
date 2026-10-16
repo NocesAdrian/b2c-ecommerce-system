@@ -1,8 +1,96 @@
-curl -X POST http://localhost:8081/api/users/create \
--H "Content-Type: application/json" \
--d '{"username":"testuser","password":"TestPassword123!"}'
 
+
+
+// ====================== CREATE ======================== //
+curl -X POST http://localhost:8081/api/users/create \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"TestPassword123!"}'
+
+curl -i -X POST http://localhost:8081/api/products/create \
+  -F "category_id=1" \
+  -F "name=Test Product" \
+  -F "description=My test product" \
+  -F "unit_price=199.99" \
+  -F "stocks=10"
+
+curl -i -X POST http://localhost:8081/api/products/create \
+  -F "category_id=1" \
+  -F "name=Test Product" \
+  -F "description=My test product" \
+  -F "unit_price=199.99" \
+  -F "stocks=10" \
+  -F "image=@/home/ain-dev/Pictures/despera-raw/Despera 001_thumb.jpg"
+
+curl -i -X POST http://localhost:8081/api/categories/create \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Electronics"}'
+
+curl -i -b sessions.txt \
+  -X  POST http://localhost:8081/api/delivery_locations/create \
+  -H "Content-Type: application/json" \
+  -d '{"location": "sison, asan norte"}'
+
+
+
+// ====================== LOGIN ========================= //
 curl -i -c sessions.txt \
--X  POST http://localhost:8081/api/auth/login \
--H "Content-Type: application/json" \
--d '{"username":"testuser","password":"TestPassword123!"}'
+  -X  POST http://localhost:8081/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"TestPassword123!"}'
+
+
+
+
+
+// =============== READ =============== //
+curl -X GET http://localhost:8081/api/users
+curl -i http://localhost:8081/api/users/customers
+curl -i http://localhost:8081/api/users/admin
+
+curl -X GET http://localhost:8081/api/products
+curl -i -X POST http://localhost:8081/api/products/product \
+  -H "Content-Type: application/json" \
+  -d '{"id":1}'
+
+curl -X GET http://localhost:8081/api/categories
+curl -i -X POST http://localhost:8081/api/products/product \
+  -H "Content-Type: application/json" \
+  -d '{"id":1}'
+
+
+//  ================= IDENTIFY USER THROUGHT COOKIES ================ //
+curl -i -b sessions.txt http://localhost:8081/api/auth
+
+
+// ====================== UPDATE ========================== //
+curl -i -X POST http://localhost:8081/api/products/update \
+  -F "id=5" \
+  -F "category_id=2" \
+  -F "name=Updated Product" \
+  -F "description=Updated description" \
+  -F "unit_price=249.99" \
+  -F "stocks=20"
+
+curl -i -X POST http://localhost:8081/api/categories/update \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"name":"Gaming Accessories"}'
+
+
+
+
+
+// ====================== DELETE ========================== //
+curl -X DELETE http://localhost:8081/api/products/delete \
+    -H "Content-Type: application/json" \
+    -d '{"id": 1}'
+
+curl -i -X DELETE http://localhost:8081/api/categories/delete \
+  -H "Content-Type: application/json" \
+  -d '{"id":1}'
+
+curl -i -X DELETE http://localhost:8081/api/users/delete \
+  -H "Content-Type: application/json" \
+  -d '{"id":2}'
+
+
+

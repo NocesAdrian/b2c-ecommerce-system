@@ -1,0 +1,8 @@
+business to customer ecommerce system
+Database
+Create
+Read
+authenticated session for auto login
+Update
+Delete
+Simple Browse Demo actual info from database

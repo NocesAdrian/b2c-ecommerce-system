@@ -2,13 +2,13 @@
 
 $config = getConfig();
 $requested_route = $config["requested_route"];
-$services = $config["services_path"];
+$service_path = $config["services_path"];
 
-require_once $services."users.php";
+require_once $service_path."users.php";
 $users = new UserRepository($config["db_path"]);
-require_once $services."auth.php";
+require_once $service_path."auth.php";
 $auth = new Auth($config["db_path"]);
-require_once $services."sessions.php";
+require_once $service_path."sessions.php";
 $sessions = new SessionRepository($config["db_path"]);
 
 switch ($requested_route) {

@@ -2,6 +2,10 @@
 
 // ================ SERVER THINGS ==================== //
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: http://127.0.0.1:5500");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
 set_exception_handler(function (Throwable $e) {
     error_log((string) $e);
@@ -19,6 +23,7 @@ require_once __DIR__."/api/users.php";
 require_once __DIR__."/api/categories.php";
 require_once __DIR__."/api/products.php";
 require_once __DIR__."/api/auth.php";
+require_once __DIR__."/api/delivery_locations.php";
 // require_once __DIR__."/api/carts.php";
 // require_once __DIR__."/api/orders.php";
 // require_once __DIR__."/api/categories.php";

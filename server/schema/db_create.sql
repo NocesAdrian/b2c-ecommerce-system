@@ -8,7 +8,7 @@ USE b2c_ecommerce_db;
 
 CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     description TEXT NULL,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -35,14 +35,14 @@ CREATE TABLE sessions (
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT NULL,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     unit_price DECIMAL(10, 2) NOT NULL,
     stocks INT NOT NULL DEFAULT 0,
@@ -66,6 +66,7 @@ CREATE TABLE cart_items (
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     CHECK (quantity > 0),
     PRIMARY KEY (cart_id, product_id),
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
@@ -73,10 +74,10 @@ CREATE TABLE cart_items (
 );
 
 CREATE TABLE delivery_locations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     location VARCHAR(255) NOT NULL,
-    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY(user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -85,15 +86,15 @@ CREATE TABLE orders (
     user_id INT NULL,
     location_id INT NULL,
     status VARCHAR(30) NOT NULL DEFAULT 'pending' 
-        COMMENT 'pending, processing, shipped, delivered',
-    payment_method VARCHAR(30) NOT NULL DEFAULT 'cash on delivery'
+        COMMENT 'pending, paid, delivered',
+    payment_method VARCHAR(30) NOT NULL DEFAULT 'gcash'
         COMMENT 'cash on delivery, online payment',
     payment_status VARCHAR(30) NOT NULL DEFAULT 'unpaid'
         COMMENT 'unpaid, paid',
-    total DECIMAL(10, 2) NOT NULL,
+    total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (location_id) REFERENCES delivery_locations(id) ON DELETE SET NULL
+    FOREIGN KEY (location_id) REFERENCES delivery_locations(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE order_items (

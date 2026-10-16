@@ -63,7 +63,7 @@ class SessionRepository extends BaseRepository
                 "error" => "Invalid or missing token"
             ]);
 
-            exit;
+            exit(-1);
         }
 
         return $token;
