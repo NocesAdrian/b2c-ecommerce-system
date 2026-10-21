@@ -15,7 +15,7 @@ class OrderItemRepository extends BaseRepository
         "unit_price"
     ];
 
-    public function add(int $order_id) : array
+    public function latch(int $order_id) : array
     {
         $stmt = $this->db->prepare
         ("

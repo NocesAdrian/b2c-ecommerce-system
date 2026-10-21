@@ -46,7 +46,7 @@ switch ($requested_route) {
         }
 
         $orders->validateID($order_result["id"], "orders");
-        $order_items_result = $orders_items->add($order_result["id"]);
+        $order_items_result = $orders_items->latch($order_result["id"]);
         $total_price = $orders_items->total_price($order_result["id"]);
         $orders->update(["total"], [$total_price["total_price"]], $order_result["id"]);
 

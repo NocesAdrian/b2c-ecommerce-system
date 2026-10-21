@@ -1,0 +1,57 @@
+System Title:
+B2C Ecommerce System
+
+BRAND:
+Despera Merchandise
+    - an upcoming anime successor of serial expirement lain
+    - this is just a fun made Merchandise System
+
+DESIGN LANGUAGE:
+
+Stack:
+    - html
+    - css
+    - boostrap
+    - javascript
+
+Colors:
+Accent    : #806A4F;
+Primary   : #FFFFFF;
+Secondary : #F6F5F4;
+Text      : #332C25;
+Muted     : #89837B;
+Border    : #EEEAE5;
+Hover     : #F0EDE8;
+
+characteristics:
+    - simple mobile and PC first design everything are Secondary
+    - modern
+    - minimal
+    - gentle to eyes
+    - not too strong Colors
+    - great contrast
+    - does not use direct blue/red/green rather use an icon using the declared Colors
+    - no border style button as much as possible
+
+navigation:
+navbar
+    - content: page title | search bar | humbergur menu for off canvas
+offcanvas
+    - content:
+        - landscape image logo
+        - username | role
+        - navigation
+        - logout
+
+        navigation content:
+            customer:
+                - Browse
+                - Carts
+                - History
+
+            admin:
+                - Dashboard
+                - Products
+                - Orders
+                - Users
+
