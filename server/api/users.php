@@ -13,6 +13,10 @@ require_once $service_path."auth.php";
 $users = new UserRepository($db_path);
 $auth = new Auth($db_path);
 
+require_once $service_path."sessions.php";
+$sessions = new SessionRepository($config["db_path"]);
+
+
 switch ($requested_route) {
     case "/api/users":
 
@@ -32,6 +36,7 @@ switch ($requested_route) {
         $password = $users->validatePassword($password);
 
         if ($users->usernameExist($username)) {
+            http_response_code(409);
             echo json_encode([
                 "error" => "User exist"
             ]);
@@ -39,8 +44,18 @@ switch ($requested_route) {
         };
 
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $result = $users->insert(["username", "password_hash"], [$username, $password_hash]);
 
-        echo json_encode($users->insert(["username", "password_hash"], [$username, $password_hash]));
+        if ($result["affected_rows"] < 1) {
+            http_response_code(500);
+            echo json_encode([
+                "error" => "Failed to Create Account"
+            ]);
+            exit(-1);
+        };
+
+        http_response_code(201);
+        echo json_encode($result);
 
         exit(0);
 
@@ -63,6 +78,21 @@ switch ($requested_route) {
 
         //$body = $users->getJsonBody();    
         echo json_encode($users->getCondition(["id", "role_id","username", "date_updated", "date_created"], ["role_id", 1, "="]));
+        exit(0);
+
+    case "/api/users/user":
+        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
+        $author = $sessions->getByToken($token_hash);
+
+        if ($author === false) {
+            $sessions->deleteByToken($token_hash);
+            http_response_code(401);
+            echo json_encode(["error" => "Session expired or invalid"]);
+            exit(-1);
+        }
+
+        echo json_encode($author);
+
         exit(0);
 
     default:

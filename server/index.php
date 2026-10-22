@@ -16,6 +16,12 @@ set_exception_handler(function (Throwable $e) {
     exit(-1);
 });
 
+// Handle preflight request
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    http_response_code(204);
+    exit;
+}
+
 require_once __DIR__."/config.php";
 require_once __DIR__."/api/root.php";
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,85 +10,90 @@
   <link href="../css/index.css" rel="stylesheet">
   <link href="../css/navbar.css" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- NAVBAR: page title | search bar | hamburger -->
-<header class="app-nav sticky-top">
-  <div class="container">
-    <div class="app-nav-row">
+  <!-- NAVBAR: page title | search bar | hamburger -->
+  <header class="app-nav sticky-top">
+    <div class="container">
+      <div class="app-nav-row">
 
-      <h1 class="page-title">Dashboard</h1>
+        <h1 class="page-title">Dashboard</h1>
 
-      <form class="nav-search" role="search" data-ui-only>
-        <i class="bi bi-search"></i>
-        <input type="search" class="form-control" placeholder="Search" aria-label="Search">
-      </form>
+        <form class="nav-search" role="search" data-ui-only>
+          <i class="bi bi-search"></i>
+          <input type="search" class="form-control" placeholder="Search" aria-label="Search">
+        </form>
 
-      <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu" aria-controls="sideMenu" aria-label="Open menu">
-        <i class="bi bi-list"></i>
-      </button>
+        <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+          aria-controls="sideMenu" aria-label="Open menu">
+          <i class="bi bi-list"></i>
+        </button>
 
-    </div>
-  </div>
-</header>
-
-<!-- OFFCANVAS (right): ADMIN -->
-<div class="offcanvas offcanvas-end side-menu" tabindex="-1" id="sideMenu" aria-labelledby="sideMenuLabel">
-
-  <div class="side-head">
-    <!-- Landscape image logo: swap the src with your own logo file -->
-    <img class="logo-landscape" id="sideMenuLabel" alt="Despera Merchandise"
-         src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64'%3E%3Crect width='240' height='64' rx='14' fill='%23F0EDE8'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23FFFFFF'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23806A4F'/%3E%3Ctext x='58' y='38' font-family='system-ui,Segoe UI,sans-serif' font-size='18' font-weight='600' letter-spacing='4' fill='%23332C25'%3EDESPERA%3C/text%3E%3C/svg%3E">
-    <button type="button" class="menu-btn menu-btn-sm" data-bs-dismiss="offcanvas" aria-label="Close menu">
-      <i class="bi bi-x-lg"></i>
-    </button>
-  </div>
-
-  <div class="offcanvas-body side-body">
-
-    <!-- username | role -->
-    <div class="user-card">
-      <div class="avatar"><i class="bi bi-person"></i></div>
-      <div class="user-info">
-        <div class="user-name">username</div>
-        <span class="role-pill">Admin</span>
       </div>
     </div>
+  </header>
 
-    <!-- navigation -->
-    <nav class="side-nav" aria-label="Main navigation">
-      <a href="admin.html" class="side-link active" aria-current="page">
-        <i class="bi bi-speedometer2"></i><span>Dashboard</span>
-      </a>
-      <a href="products.html" class="side-link">
-        <i class="bi bi-box-seam"></i><span>Products</span>
-      </a>
-      <a href="orders.html" class="side-link">
-        <i class="bi bi-receipt"></i><span>Orders</span>
-      </a>
-      <a href="users.html" class="side-link">
-        <i class="bi bi-people"></i><span>Users</span>
-      </a>
-    </nav>
+  <!-- OFFCANVAS (right): ADMIN -->
+  <div class="offcanvas offcanvas-end side-menu" tabindex="-1" id="sideMenu" aria-labelledby="sideMenuLabel">
 
-    <!-- logout -->
-    <a href="login.html" class="logout-btn">
-      <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
+    <div class="side-head">
+      <!-- Landscape image logo: swap the src with your own logo file -->
+      <img class="logo-landscape" id="sideMenuLabel" alt="Despera Merchandise"
+        src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64'%3E%3Crect width='240' height='64' rx='14' fill='%23F0EDE8'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23FFFFFF'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23806A4F'/%3E%3Ctext x='58' y='38' font-family='system-ui,Segoe UI,sans-serif' font-size='18' font-weight='600' letter-spacing='4' fill='%23332C25'%3EDESPERA%3C/text%3E%3C/svg%3E">
+      <button type="button" class="menu-btn menu-btn-sm" data-bs-dismiss="offcanvas" aria-label="Close menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
 
+    <div class="offcanvas-body side-body">
+
+      <!-- username | role -->
+      <div class="user-card">
+        <div class="avatar"><i class="bi bi-person"></i></div>
+        <div class="user-info">
+          <div class="user-name" id="username-display">username</div>
+          <span class="role-pill">Admin</span>
+        </div>
+      </div>
+
+      <!-- navigation -->
+      <nav class="side-nav" aria-label="Main navigation">
+        <a href="admin.html" class="side-link active" aria-current="page">
+          <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+        </a>
+        <a href="products.html" class="side-link">
+          <i class="bi bi-box-seam"></i><span>Products</span>
+        </a>
+        <a href="orders.html" class="side-link">
+          <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+        <a href="users.html" class="side-link">
+          <i class="bi bi-people"></i><span>Users</span>
+        </a>
+      </nav>
+
+      <!-- logout -->
+      <a class="logout-btn" id="logout-btn">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+
+    </div>
   </div>
-</div>
 
-<!-- Page content (replace with your page) -->
-<main class="container demo-main">
-  <div class="demo-card">
-    <p class="eyebrow mb-2">Admin</p>
-    <h2 class="section-title mb-2">Dashboard</h2>
-    <p class="text-muted-d mb-0">Page content goes here.</p>
-  </div>
-</main>
+  <!-- Page content (replace with your page) -->
+  <main class="container demo-main">
+    <div class="demo-card">
+      <p class="eyebrow mb-2">Admin</p>
+      <h2 class="section-title mb-2">Dashboard</h2>
+      <p class="text-muted-d mb-0">Page content goes here.</p>
+    </div>
+  </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../scripts/navbar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../scripts/navbar.js"></script>
+  <script type="module" src="../api/logout.js"></script>
+  <script type="module" src="../api/auth.js"></script>
 </body>
+
 </html>

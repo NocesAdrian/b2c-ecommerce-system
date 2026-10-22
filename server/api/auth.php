@@ -91,7 +91,7 @@ switch ($requested_route) {
             "path" => "/",
             "secure" => true,      // HTTPS only
             "httponly" => true,    // No JavaScript access
-            "samesite" => "Lax"
+            "samesite" => "None"
         ]);
 
         http_response_code(200);
@@ -102,6 +102,32 @@ switch ($requested_route) {
         
         exit(0);
     
+    case "/api/auth/logout":
+
+        $token = $_COOKIE["token"] ?? '';
+        $token = $sessions->validateToken($token);
+
+        $token_hash = hash("sha256", $token);
+
+        // Expire the cookie using the same settings as login
+        setcookie("token", "", [
+            "expires" => time() - 3600,
+            "path" => "/",
+            "secure" => true,
+            "httponly" => true,
+            "samesite" => "None"
+        ]);
+
+        $sessions->deleteByToken($token_hash);
+
+        http_response_code(200);
+        echo json_encode([
+            "authenticated" => false,
+            "message" => "Logged out successfully"
+        ]);
+
+        exit(0);
+        
     default:
         break;
 }      

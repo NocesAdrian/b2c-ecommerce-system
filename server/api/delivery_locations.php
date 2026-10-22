@@ -37,8 +37,17 @@ switch ($requested_route) {
         $body = $delivery_locations->getJsonBody();
 
         $location = $delivery_locations->validateString($body["location"] ?? '');
-
-        echo json_encode($delivery_locations->insert(["user_id", "location"], [$delivery_locations->validateID($author["user_id"], "users"), $location]));
+        $result = $delivery_locations->insert(["user_id", "location"], [$delivery_locations->validateID($author["user_id"], "users"), $location]);
+        
+        if ($result["affected_rows"] < 1) {
+            echo json_encode([
+                "error" => "Failed to Create Account"
+            ]);
+            exit(-1);
+        };
+        
+        http_response_code(201);
+        echo json_encode($result);
 
         exit(0);
 

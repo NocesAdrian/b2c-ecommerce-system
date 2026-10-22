@@ -283,7 +283,7 @@ class BaseRepository
         };
 
         $stmt->execute($params);
-
+        
         return [
             "affected_rows" => (int)$stmt->rowCount()
         ];
