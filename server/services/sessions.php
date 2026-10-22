@@ -69,5 +69,19 @@ class SessionRepository extends BaseRepository
         return $token;
     }
 
+    public function deleteByExpired(): array
+    {
+        $stmt = $this->db->prepare("
+            DELETE FROM sessions
+            WHERE expire_at < CURRENT_TIMESTAMP;
+        ");
+
+        $stmt->execute();
+
+        return [
+            "affected_rows" => (int)$stmt->rowCount()
+        ];
+    }
+
 }
 ?>

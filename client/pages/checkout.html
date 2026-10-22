@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout | Despera Merchandise</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../css/index.css" rel="stylesheet">
+  <link href="../css/navbar.css" rel="stylesheet">
+  <link href="../css/checkout.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- NAVBAR: page title | search bar | hamburger -->
+  <header class="app-nav sticky-top">
+    <div class="container">
+      <div class="app-nav-row">
+
+        <h1 class="page-title">Checkout</h1>
+
+        <form class="nav-search" role="search" data-ui-only>
+          <i class="bi bi-search"></i>
+          <input type="search" class="form-control" placeholder="Search merchandise" aria-label="Search">
+        </form>
+
+        <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+          aria-controls="sideMenu" aria-label="Open menu">
+          <i class="bi bi-list"></i>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- OFFCANVAS (right): CUSTOMER -->
+  <div class="offcanvas offcanvas-end side-menu" tabindex="-1" id="sideMenu" aria-labelledby="sideMenuLabel">
+
+    <div class="side-head">
+      <img class="logo-landscape" id="sideMenuLabel" alt="Despera Merchandise"
+        src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64'%3E%3Crect width='240' height='64' rx='14' fill='%23F0EDE8'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23FFFFFF'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23806A4F'/%3E%3Ctext x='58' y='38' font-family='system-ui,Segoe UI,sans-serif' font-size='18' font-weight='600' letter-spacing='4' fill='%23332C25'%3EDESPERA%3C/text%3E%3C/svg%3E">
+      <button type="button" class="menu-btn menu-btn-sm" data-bs-dismiss="offcanvas" aria-label="Close menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="offcanvas-body side-body">
+
+      <div class="user-card">
+        <div class="avatar"><i class="bi bi-person"></i></div>
+        <div class="user-info">
+          <div class="user-name" id="username-display">username</div>
+          <span class="role-pill">Customer</span>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="Main navigation">
+        <a href="customer.html" class="side-link">
+          <i class="bi bi-grid"></i><span>Browse</span>
+        </a>
+        <a href="carts.html" class="side-link active" aria-current="page">
+          <i class="bi bi-bag"></i><span>Carts</span>
+        </a>
+        <a href="history.html" class="side-link">
+          <i class="bi bi-clock-history"></i><span>History</span>
+        </a>
+      </nav>
+
+      <a class="logout-btn" id="logout-btn">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CHECKOUT PREVIEW -->
+  <main class="container checkout-page">
+
+    <a href="carts.html" class="back-link">
+      <i class="bi bi-arrow-left"></i> Back to cart
+    </a>
+
+    <div class="mb-4">
+      <p class="eyebrow mb-2">Review your order</p>
+      <h2 class="section-title mb-1">Almost there.</h2>
+      <p class="text-muted-d mb-0">Check everything below before you confirm and pay.</p>
+    </div>
+
+    <div class="row g-4 align-items-start">
+
+      <!-- Items -->
+      <div class="col-lg-8">
+        <div class="items-card">
+
+          <div class="items-head d-none d-md-grid">
+            <span>Product</span>
+            <span class="text-center">Quantity</span>
+            <span class="text-end">Total</span>
+          </div>
+
+          <ul class="items-list" id="checkoutItems" aria-label="Items in your cart"></ul>
+
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="col-lg-4">
+        <aside class="summary-card">
+          <h3 class="summary-title">Order summary</h3>
+
+          <div class="summary-row">
+            <span>Items</span>
+            <strong id="summaryCount">0</strong>
+          </div>
+          <div class="summary-row summary-total">
+            <span>Total</span>
+            <strong id="summaryTotal">₱0</strong>
+          </div>
+
+          <button type="button" class="btn btn-d pay-btn" id="payBtn">
+            <i class="bi bi-shield-check me-2"></i><span>Confirm checkout and pay</span>
+          </button>
+          <a href="carts.html" class="btn btn-ghost pay-cancel">Back to cart</a>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- CHECKOUT ITEM TEMPLATE (one row per cart item) -->
+  <template id="checkout-item-template">
+    <li class="co-item">
+      <div class="co-product">
+        <div class="co-thumb"><img src="" alt="" loading="lazy"></div>
+        <div class="co-name"></div>
+      </div>
+      <div class="co-qty"><span class="co-qty-label">Qty</span> <span class="co-qty-value"></span></div>
+      <div class="co-total"></div>
+    </li>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../scripts/navbar.js"></script>
+  <script src="../scripts/checkout.js"></script>
+  <script type="module" src="../api/logout.js"></script>
+  <script type="module" src="../api/auth.js"></script>
+  <script type="module" src="../api/delete-sessions.js"></script>
+</body>
+
+</html>

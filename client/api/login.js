@@ -9,8 +9,9 @@ async function login(api_endpoint) {
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const remember_me = document.getElementById("remember").checked;
 
-    const user = { username, password };
+    const user = { username, password, remember_me };
 
     const response = await fetch(api_endpoint.login, {
         method: "POST",

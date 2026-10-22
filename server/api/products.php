@@ -149,7 +149,8 @@ switch ($requested_route) {
 
         $id = $products->validateID($id, "products");
 
-        echo json_encode($products->get($id));
+        http_response_code(200);
+        echo json_encode($products->getById($id));
 
         exit(0);
 

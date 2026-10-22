@@ -47,28 +47,26 @@ class ProductRepository extends BaseRepository
         return (float) $price;
     }
 
-    public function getAll() : array
+    public function getById(int $id): array|false
     {
-        $stmt = $this->db->prepare
-        ("
-            SELECT 
+        $stmt = $this->db->prepare("
+            SELECT
                 p.id,
-                p.name, 
-                c.name AS category, 
-                p.description, 
-                p.unit_price, 
-                p.stocks, 
+                p.name,
+                c.name AS category,
+                p.description,
+                p.unit_price,
+                p.stocks,
                 p.image_path
-            FROM 
-                products AS p
-            JOIN 
-                categories AS c 
-            ON c.id = p.category_id;
+            FROM products AS p
+            JOIN categories AS c
+                ON c.id = p.category_id
+            WHERE p.id = ?;
         ");
 
-        $stmt->execute();
-        
-        return $stmt->fetchAll();
+        $stmt->execute([$id]);
+
+        return $stmt->fetch();
     }
 
 }

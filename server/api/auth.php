@@ -127,6 +127,13 @@ switch ($requested_route) {
         ]);
 
         exit(0);
+
+    case "/api/auth/sessions/delete":
+
+        http_response_code(200);
+        echo json_encode($sessions->deleteByExpired());
+
+        exit(0);
         
     default:
         break;
