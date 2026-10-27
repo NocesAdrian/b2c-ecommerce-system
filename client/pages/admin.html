@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="../css/index.css" rel="stylesheet">
   <link href="../css/navbar.css" rel="stylesheet">
+  <link href="../css/dashboard.css" rel="stylesheet">
 </head>
 
 <body>
@@ -81,13 +82,109 @@
     </div>
   </div>
 
-  <!-- Page content (replace with your page) -->
-  <main class="container demo-main">
-    <div class="demo-card">
-      <p class="eyebrow mb-2">Admin</p>
-      <h2 class="section-title mb-2">Dashboard</h2>
-      <p class="text-muted-d mb-0">Page content goes here.</p>
+  <!-- DASHBOARD -->
+  <main class="container dash-page">
+
+    <div class="dash-head">
+      <div>
+        <p class="eyebrow mb-2">Admin</p>
+        <h2 class="section-title mb-1">Overview</h2>
+        <p class="text-muted-d mb-0">A quick look at how the store is doing.</p>
+      </div>
+      <button type="button" class="btn btn-soft" id="refresh-btn">
+        <i class="bi bi-arrow-repeat me-2"></i>Refresh
+      </button>
     </div>
+
+    <div class="row g-3 g-lg-4">
+
+      <!-- Total Products -->
+      <div class="col-12 col-md-4">
+        <article class="stat-card is-loading">
+          <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+          <p class="stat-label">Total Products</p>
+          <p class="stat-value" id="stat-products">0</p>
+          <p class="stat-note">Every product in the catalog</p>
+        </article>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="col-12 col-md-4">
+        <article class="stat-card is-loading">
+          <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+          <p class="stat-label">Total Orders</p>
+          <p class="stat-value" id="stat-orders">0</p>
+          <p class="stat-note">All orders placed by customers</p>
+        </article>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="col-12 col-md-4">
+        <article class="stat-card stat-card-revenue is-loading">
+          <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+          <p class="stat-label">Total Revenue</p>
+          <p class="stat-value" id="stat-revenue">₱0.00</p>
+          <p class="stat-note">Paid and delivered orders only</p>
+        </article>
+      </div>
+
+    </div>
+
+    <div class="dash-error d-none" id="dash-error" role="alert">
+      <i class="bi bi-wifi-off"></i><span>Couldn't load the numbers. Please try again.</span>
+    </div>
+
+    <!-- Recent orders: latest 5 of each status, shown separately -->
+    <section class="recent-orders" aria-labelledby="recent-title">
+      <div class="recent-head">
+        <h3 class="recent-title" id="recent-title"><i class="bi bi-clock-history"></i>Recent orders</h3>
+        <a href="orders.html" class="recent-link">View all <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <div class="row g-3 g-lg-4">
+
+        <div class="col-12 col-lg-4">
+          <div class="recent-group">
+            <h4 class="recent-group-title"><i class="bi bi-hourglass-split"></i>Pending</h4>
+            <div class="recent-list" id="recent-pending"></div>
+            <p class="recent-empty d-none" id="empty-pending"><i class="bi bi-inbox"></i>No pending orders.</p>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="recent-group">
+            <h4 class="recent-group-title"><i class="bi bi-check-circle"></i>Paid</h4>
+            <div class="recent-list" id="recent-paid"></div>
+            <p class="recent-empty d-none" id="empty-paid"><i class="bi bi-inbox"></i>No paid orders.</p>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="recent-group">
+            <h4 class="recent-group-title"><i class="bi bi-box-seam"></i>Delivered</h4>
+            <div class="recent-list" id="recent-delivered"></div>
+            <p class="recent-empty d-none" id="empty-delivered"><i class="bi bi-inbox"></i>No delivered orders.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="recent-empty d-none" id="recent-error">
+        <i class="bi bi-wifi-off"></i>Couldn't load recent orders.
+      </p>
+    </section>
+
+    <template id="recent-order-template">
+      <article class="recent-item">
+        <div class="recent-icon"><i class="bi bi-receipt"></i></div>
+        <div class="recent-main">
+          <p class="recent-id"></p>
+          <p class="recent-date"></p>
+        </div>
+        <p class="recent-total"></p>
+      </article>
+    </template>
+
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -95,6 +192,7 @@
   <script type="module" src="../api/logout.js"></script>
   <script type="module" src="../api/auth.js"></script>
   <script type="module" src="../api/delete-sessions.js"></script>
+  <script type="module" src="../api/dashboard.js"></script>
 </body>
 
 </html>

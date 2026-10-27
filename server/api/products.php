@@ -154,6 +154,13 @@ switch ($requested_route) {
 
         exit(0);
 
+    case "/api/products/categories":
+ 
+        echo json_encode($products->getCategories());
+ 
+        exit(0);
+
+    
     default:
         break;
 }

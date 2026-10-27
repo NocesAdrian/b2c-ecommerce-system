@@ -25,5 +25,5 @@ async function deleteExpiredSessions() {
 // Run once immediately
 deleteExpiredSessions();
 
-// Then run every 1 minute
-setInterval(deleteExpiredSessions, 60 * 1000);
+// Then run every 10 minute
+setInterval(deleteExpiredSessions, 1000 * 60 * 10);

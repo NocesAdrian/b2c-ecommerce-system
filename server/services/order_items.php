@@ -19,8 +19,8 @@ class OrderItemRepository extends BaseRepository
     {
         $stmt = $this->db->prepare
         ("
-            INSERT INTO order_items (order_id, product_id, quantity, unit_price)
-            SELECT o.id, p.id, ci.quantity, p.unit_price
+            INSERT INTO order_items (order_id, product_id, name, description, quantity, unit_price)
+            SELECT o.id, p.id, p.name, p.description, ci.quantity, p.unit_price
             FROM orders AS o
             JOIN carts AS c 
                 ON c.user_id = o.user_id
@@ -64,6 +64,21 @@ class OrderItemRepository extends BaseRepository
                 ? (float) $result["total_price"]
                 : 0
         ];
+    }
+
+    public function getByOrder(int $order_id) : array
+    {
+        $stmt = $this->db->prepare
+        ("
+            SELECT name, quantity, unit_price
+            FROM order_items
+            WHERE order_id = ?
+            ORDER BY id;
+        ");
+ 
+        $stmt->execute([$order_id]);
+ 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

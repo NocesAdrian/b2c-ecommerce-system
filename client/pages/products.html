@@ -4,11 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard | Despera Merchandise</title>
+  <title>Products | Despera Merchandise</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="../css/index.css" rel="stylesheet">
   <link href="../css/navbar.css" rel="stylesheet">
+  <link href="../css/history.css" rel="stylesheet">
+  <link href="../css/product-card.css" rel="stylesheet">
+  <link href="../css/products.css" rel="stylesheet">
 </head>
 
 <body>
@@ -22,7 +25,7 @@
 
         <form class="nav-search" role="search" data-ui-only>
           <i class="bi bi-search"></i>
-          <input type="search" class="form-control" placeholder="Search" aria-label="Search">
+          <input type="search" class="form-control" id="product-search" placeholder="Search products" aria-label="Search products">
         </form>
 
         <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
@@ -59,10 +62,10 @@
 
       <!-- navigation -->
       <nav class="side-nav" aria-label="Main navigation">
-        <a href="admin.html" class="side-link" aria-current="page">
+        <a href="admin.html" class="side-link">
           <i class="bi bi-speedometer2"></i><span>Dashboard</span>
         </a>
-        <a href="products.html" class="side-link active">
+        <a href="products.html" class="side-link active" aria-current="page">
           <i class="bi bi-box-seam"></i><span>Products</span>
         </a>
         <a href="orders.html" class="side-link">
@@ -81,19 +84,166 @@
     </div>
   </div>
 
-  <!-- Page content (replace with your page) -->
-  <main class="container demo-main">
-    <div class="demo-card">
-      <p class="eyebrow mb-2">Admin</p>
-      <h2 class="section-title mb-2">Products</h2>
-      <p class="text-muted-d mb-0">Page content goes here.</p>
+  <!-- ORDERS -->
+  <main class="container history-page">
+
+    <div class="products-head">
+      <div>
+        <p class="eyebrow mb-2">Admin</p>
+        <h2 class="section-title mb-1">All products</h2>
+        <p class="text-muted-d mb-0" id="products-summary">Loading products…</p>
+      </div>
+      <button type="button" class="btn btn-d" id="add-product-btn">
+        <i class="bi bi-plus-lg me-2"></i>Add product
+      </button>
     </div>
+
+    <div class="row g-3" id="product-list" aria-live="polite"></div>
+
+    <div class="history-state d-none" id="products-state">
+      <i class="bi bi-inbox" id="products-state-icon"></i>
+      <h3 id="products-state-title">No products</h3>
+      <p id="products-state-text"></p>
+      <button type="button" class="btn btn-soft d-none" id="products-retry-btn">Try again</button>
+    </div>
+
   </main>
+
+  <!-- One product card -->
+  <template id="product-admin-template">
+    <div class="col-6 col-md-4 col-lg-3">
+      <article class="product-card admin-card">
+        <div class="product-card-img">
+          <img class="product-card-photo" src="" alt="" loading="lazy">
+          <i class="bi bi-image photo-missing"></i>
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title"></h3>
+          <p class="admin-category"></p>
+          <p class="product-card-price"></p>
+          <span class="pill stock-pill"><i class="bi"></i><span class="stock-text"></span></span>
+        </div>
+        <div class="admin-actions">
+          <button type="button" class="btn btn-soft edit-btn"><i class="bi bi-pencil me-2"></i>Edit</button>
+          <button type="button" class="btn btn-soft delete-btn" aria-label="Delete product"><i class="bi bi-trash3"></i></button>
+        </div>
+      </article>
+    </div>
+  </template>
+
+  <!-- Add / edit popup -->
+  <div class="modal fade order-modal" id="productModal" tabindex="-1" aria-labelledby="productModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <button type="button" class="menu-btn menu-btn-sm modal-close" data-bs-dismiss="modal" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+
+          <div class="modal-icon"><i class="bi bi-box-seam"></i></div>
+          <h2 class="modal-heading" id="productModalTitle">Add product</h2>
+          <p class="modal-sub" id="productModalSub">Fill in the details below.</p>
+
+          <form id="product-form" class="product-form" novalidate>
+
+            <div class="image-picker">
+              <div class="image-preview" id="image-preview">
+                <img id="image-preview-img" alt="" class="d-none">
+                <i class="bi bi-image" id="image-preview-icon"></i>
+              </div>
+              <div class="image-picker-text">
+                <label class="btn btn-soft mb-1" for="field-image"><i class="bi bi-upload me-2"></i>Choose image</label>
+                <input type="file" id="field-image" accept="image/*" class="d-none">
+                <p class="field-hint mb-0" id="image-hint">Optional. A default image is used if you skip it.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="field-name">Name</label>
+              <input type="text" id="field-name" class="field-input" maxlength="120" autocomplete="off" required>
+            </div>
+
+            <div class="field">
+              <label for="field-description">Description</label>
+              <textarea id="field-description" class="field-input" rows="3" maxlength="1000"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="field-category">Category</label>
+              <select id="field-category" class="field-input"></select>
+              <button type="button" class="category-toggle" id="category-toggle" aria-expanded="false" aria-controls="category-panel">
+                <i class="bi bi-tags"></i>Manage categories
+              </button>
+            </div>
+
+            <!-- Add / delete categories -->
+            <div class="category-panel d-none" id="category-panel">
+              <ul class="category-list" id="category-list"></ul>
+              <p class="field-hint category-empty d-none" id="category-empty">No categories yet. Add your first one below.</p>
+
+              <div class="category-add">
+                <input type="text" id="new-category-name" class="field-input" maxlength="80" placeholder="New category name" autocomplete="off" aria-label="New category name">
+                <button type="button" class="btn btn-soft" id="add-category-btn"><i class="bi bi-plus-lg me-1"></i>Add</button>
+              </div>
+
+              <p class="modal-error d-none" id="category-error"><i class="bi bi-exclamation-circle"></i><span></span></p>
+              <p class="field-hint mb-0">Deleting a category keeps its products, they just become uncategorized.</p>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="field-price">Price (₱)</label>
+                <input type="number" id="field-price" class="field-input" min="0.01" step="0.01" inputmode="decimal" required>
+              </div>
+              <div class="field">
+                <label for="field-stocks">Stocks</label>
+                <input type="number" id="field-stocks" class="field-input" min="0" step="1" inputmode="numeric" required>
+              </div>
+            </div>
+
+            <p class="modal-error d-none" id="product-form-error"><i class="bi bi-exclamation-circle"></i><span></span></p>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-d" id="save-product-btn">Save product</button>
+              <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete popup -->
+  <div class="modal fade order-modal" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div class="modal-icon"><i class="bi bi-trash3"></i></div>
+          <h2 class="modal-heading" id="deleteModalTitle">Delete product?</h2>
+          <p class="modal-sub" id="delete-text">This can't be undone.</p>
+
+          <p class="modal-error d-none" id="delete-error"><i class="bi bi-exclamation-circle"></i><span></span></p>
+
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-d" id="confirm-delete-btn">Delete</button>
+            <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Keep it</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>
   <script type="module" src="../api/logout.js"></script>
+  <script type="module" src="../api/auth.js"></script>
   <script type="module" src="../api/delete-sessions.js"></script>
+  <script type="module" src="../api/admin-products.js"></script>
 </body>
 
 </html>

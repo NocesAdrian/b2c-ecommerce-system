@@ -1,0 +1,90 @@
+/* ==========================================================================
+   browse-art.css
+   Small add-on for the Browse page. Everything else (font, hero, cards,
+   grid, checkout bar) comes from your original stylesheets.
+   This file only covers:
+     1. the category chips
+     2. the loading skeleton
+   Load it LAST, after browse.css.
+   ========================================================================== */
+
+/* ---------- 1. Category chips -------------------------------------------- */
+
+.ba-chips {
+  display: flex;
+  gap: .35rem;
+  margin: 0 -.25rem;
+  padding: .25rem .25rem .5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.ba-chips::-webkit-scrollbar { display: none; }
+.ba-chips[hidden] { display: none; }
+
+.ba-chip {
+  flex: none;
+  scroll-snap-align: start;
+  padding: .4rem .85rem;
+  border: 1px solid var(--bs-border-color, rgba(0, 0, 0, .15));
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .86rem;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+
+.ba-chip:hover {
+  border-color: var(--accent, #806A4F);
+}
+
+.ba-chip[aria-pressed="true"] {
+  background: var(--accent, #806A4F);
+  border-color: var(--accent, #806A4F);
+  color: #fff;
+}
+
+.ba-chip:focus-visible {
+  outline: 2px solid var(--accent, #806A4F);
+  outline-offset: 2px;
+}
+
+/* ---------- 2. Loading skeleton ------------------------------------------ */
+
+.ba-skel-grid {
+  column-count: 2;
+  column-gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .ba-skel-grid { column-count: 3; }
+}
+
+@media (min-width: 992px) {
+  .ba-skel-grid { column-count: 4; }
+}
+
+.ba-skel {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  background: linear-gradient(100deg, rgba(128, 106, 79, .10) 30%, rgba(128, 106, 79, .04) 50%, rgba(128, 106, 79, .10) 70%);
+  background-size: 200% 100%;
+  animation: ba-shimmer 1.4s linear infinite;
+}
+
+.ba-skel:nth-child(3n+1) { aspect-ratio: 4 / 5; }
+.ba-skel:nth-child(3n+2) { aspect-ratio: 1 / 1.1; }
+.ba-skel:nth-child(3n)   { aspect-ratio: 5 / 6; }
+
+@keyframes ba-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-skel { animation: none; }
+  .ba-chip { transition: none; }
+}

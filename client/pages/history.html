@@ -4,11 +4,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Browse | Despera Merchandise</title>
+  <title>History | Despera Merchandise</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="../css/index.css" rel="stylesheet">
   <link href="../css/navbar.css" rel="stylesheet">
+  <link href="../css/history.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/view-product.css">
 </head>
 
 <body>
@@ -19,11 +21,6 @@
       <div class="app-nav-row">
 
         <h1 class="page-title">History</h1>
-
-        <form class="nav-search" role="search" data-ui-only>
-          <i class="bi bi-search"></i>
-          <input type="search" class="form-control" placeholder="Search merchandise" aria-label="Search">
-        </form>
 
         <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
           aria-controls="sideMenu" aria-label="Open menu">
@@ -59,13 +56,13 @@
 
       <!-- navigation -->
       <nav class="side-nav" aria-label="Main navigation">
-        <a href="customer.html" class="side-link" aria-current="page">
+        <a href="customer.html" class="side-link">
           <i class="bi bi-grid"></i><span>Browse</span>
         </a>
         <a href="carts.html" class="side-link">
           <i class="bi bi-bag"></i><span>Carts</span>
         </a>
-        <a href="history.html" class="side-link active">
+        <a href="history.html" class="side-link active" aria-current="page">
           <i class="bi bi-clock-history"></i><span>History</span>
         </a>
       </nav>
@@ -78,20 +75,173 @@
     </div>
   </div>
 
-  <!-- Page content (replace with your page) -->
-  <main class="container demo-main">
-    <div class="demo-card">
-      <p class="eyebrow mb-2">Customer</p>
-      <h2 class="section-title mb-2">History</h2>
-      <p class="text-muted-d mb-0">Page content goes here.</p>
+  <!-- ORDER HISTORY -->
+  <main class="container history-page">
+
+    <a href="customer.html" class="back-link">
+      <i class="bi bi-arrow-left"></i> Back to browse
+    </a>
+
+    <div class="mb-4">
+      <p class="eyebrow mb-2">Your orders</p>
+      <h2 class="section-title mb-1">Order history</h2>
+      <p class="text-muted-d mb-0" id="history-summary">Loading your orders…</p>
     </div>
+
+    <!-- Order cards are rendered here by ../api/history.js -->
+    <div class="row g-3" id="order-list" aria-live="polite"></div>
+
+    <!-- Empty / error state -->
+    <div class="history-state d-none" id="history-state"></div>
+
   </main>
+
+  <!-- ORDER CARD TEMPLATE (one per order). Click a card to open its details. -->
+  <template id="order-card-template">
+    <div class="col-12 col-lg-6">
+      <article class="order-card order-card-link" role="button" tabindex="0">
+
+        <div class="order-top">
+          <div class="order-icon"><i class="bi bi-receipt"></i></div>
+          <div class="order-heading">
+            <h3 class="order-id"></h3>
+            <p class="order-date"></p>
+          </div>
+          <span class="pill order-status"></span>
+        </div>
+
+        <ul class="order-details">
+          <li><i class="bi bi-bag"></i><span class="order-items"></span></li>
+          <li><i class="bi bi-geo-alt"></i><span class="order-location"></span></li>
+          <li><i class="bi bi-wallet2"></i><span class="order-method"></span></li>
+        </ul>
+
+        <div class="order-bottom">
+          <span class="order-total-label">Total</span>
+          <div class="order-total-wrap">
+            <strong class="order-total"></strong>
+            <i class="bi bi-chevron-right order-chevron"></i>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </template>
+
+  <!-- ORDER POPUP: details, pay with GCash, cancel -->
+  <div class="modal fade order-modal" id="orderModal" tabindex="-1" aria-labelledby="orderModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <button type="button" class="menu-btn menu-btn-sm modal-close" data-bs-dismiss="modal" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+
+          <!-- View: details -->
+          <div id="view-details">
+            <div class="modal-icon"><i class="bi bi-receipt"></i></div>
+            <h2 class="modal-heading" id="orderModalTitle">Order</h2>
+            <p class="modal-sub" id="modal-date"></p>
+
+            <div class="modal-pills">
+              <span class="pill" id="modal-status"></span>
+            </div>
+
+            <!-- Order progress: Placed → Paid → Delivered (hidden when cancelled) -->
+            <ol class="order-steps" id="order-steps" aria-label="Order progress">
+              <li data-step="placed">
+                <span class="step-dot"><i class="bi bi-bag-check"></i></span>
+                <span class="step-label">Placed</span>
+              </li>
+              <li data-step="paid">
+                <span class="step-dot"><i class="bi bi-wallet2"></i></span>
+                <span class="step-label">Paid</span>
+              </li>
+              <li data-step="delivered">
+                <span class="step-dot"><i class="bi bi-box-seam"></i></span>
+                <span class="step-label">Delivered</span>
+              </li>
+            </ol>
+
+            <ul class="modal-info">
+              <li><span>Items</span><strong id="modal-items"></strong></li>
+              <li><span>Delivery</span><strong id="modal-location"></strong></li>
+              <li><span>Payment</span><strong id="modal-method"></strong></li>
+              <li class="modal-info-total"><span>Total</span><strong id="modal-total"></strong></li>
+            </ul>
+
+            <p class="modal-note d-none" id="modal-note"></p>
+
+            <div class="d-grid gap-2" id="modal-actions">
+              <button type="button" class="btn btn-d" id="pay-now-btn">
+                <i class="bi bi-qr-code-scan me-2"></i>Pay now
+              </button>
+              <button type="button" class="btn btn-soft" id="cancel-order-btn">Cancel order</button>
+            </div>
+          </div>
+
+          <!-- View: pay with GCash -->
+          <div id="view-pay" class="d-none">
+            <div class="modal-icon"><i class="bi bi-qr-code-scan"></i></div>
+            <h2 class="modal-heading">Pay with GCash</h2>
+            <p class="modal-sub">Scan the QR code with your GCash app, then tap "I've paid".</p>
+
+            <!-- Put your GCash QR image at ../images/gcash-qr.png (or change the src) -->
+            <div class="gcash-qr" id="gcash-qr">
+              <img src="../images/gcash-qr.png" alt="GCash QR code">
+            </div>
+
+            <div class="modal-amount">
+              <span>Amount to pay</span>
+              <strong id="pay-total">₱0.00</strong>
+            </div>
+
+            <p class="modal-error d-none" id="pay-error" role="alert">Couldn't update your order. Please try again.</p>
+
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-d" id="paid-confirm-btn">
+                <i class="bi bi-check2 me-2"></i>I've paid
+              </button>
+              <button type="button" class="btn btn-soft" id="pay-back-btn">Back</button>
+            </div>
+          </div>
+
+          <!-- View: confirm cancel -->
+          <div id="view-cancel" class="d-none">
+            <div class="modal-icon"><i class="bi bi-x-circle"></i></div>
+            <h2 class="modal-heading">Cancel this order?</h2>
+            <p class="modal-sub" id="cancel-text">This can't be undone.</p>
+
+            <p class="modal-error d-none" id="cancel-error" role="alert">Couldn't cancel your order. Please try again.</p>
+
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-d" id="cancel-confirm-btn">Yes, cancel order</button>
+              <button type="button" class="btn btn-soft" id="cancel-back-btn">Keep order</button>
+            </div>
+          </div>
+
+          <!-- View: done -->
+          <div id="view-done" class="d-none">
+            <div class="modal-icon" id="done-icon"><i class="bi bi-check2-circle"></i></div>
+            <h2 class="modal-heading" id="done-title">Done</h2>
+            <p class="modal-sub" id="done-text"></p>
+            <div class="d-grid">
+              <button type="button" class="btn btn-d" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>
   <script type="module" src="../api/logout.js"></script>
   <script type="module" src="../api/auth.js"></script>
   <script type="module" src="../api/delete-sessions.js"></script>
+  <script type="module" src="../api/history.js"></script>
 </body>
 
 </html>

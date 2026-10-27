@@ -15,6 +15,29 @@ class CartItemRepository extends BaseRepository
         "date_updated",
     ];
 
+    public function updateQuantity(
+        int $cartID,
+        int $productID,
+        int $quantity
+    ): array {
+        $stmt = $this->db->prepare("
+            UPDATE " . $this->table . "
+            SET quantity = :quantity
+            WHERE cart_id = :cart_id
+            AND product_id = :product_id;
+        ");
+
+        $stmt->execute([
+            "quantity" => $quantity,
+            "cart_id" => $cartID,
+            "product_id" => $productID
+        ]);
+
+        return [
+            "affected_rows" => (int) $stmt->rowCount()
+        ];
+    }
+
     public function deleteCartItems(int $cartID, int $productID) : array 
     {
         
@@ -34,7 +57,7 @@ class CartItemRepository extends BaseRepository
         ];
     }
 
-    public function getItem(int $cartID, int $productID): array
+    public function getItem(int $cartID, int $productID): array|false
     {
         $stmt = $this->db->prepare("
             SELECT * FROM " . $this->table . "
@@ -49,13 +72,74 @@ class CartItemRepository extends BaseRepository
 
         $record = $stmt->fetch();
 
-        if ($record === false) {
-            http_response_code(404);
-            echo json_encode(["error" => "Record not found"]);
-            exit;
-        }
-
         return $record;
+    }
+
+    public function getUserItems(int $userID): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                p.id AS product_id,
+                p.name AS product_name,
+                ci.quantity AS product_quantity,
+                p.unit_price AS product_price,
+                p.image_path AS image_path
+            FROM
+                cart_items AS ci
+            JOIN 
+                carts as c ON c.id = ci.cart_id
+            JOIN 
+                products as p ON p.id = ci.product_id
+            WHERE 
+                c.user_id = :user_id;
+        ");
+
+        $stmt->execute([
+            "user_id" => $userID
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function getUserGrandTotal(int $userID): float
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                COALESCE(SUM(p.unit_price * ci.quantity), 0) AS grand_total
+            FROM cart_items AS ci
+            JOIN carts AS c
+                ON c.id = ci.cart_id
+            JOIN products AS p
+                ON p.id = ci.product_id
+            WHERE c.user_id = :user_id;
+        ");
+
+        $stmt->execute([
+            "user_id" => $userID
+        ]);
+
+        return (float) $stmt->fetchColumn();
+    }
+
+    public function clearUserItems(int $user_id) : array
+    {
+        $stmt = $this->db->prepare
+        ("
+            DELETE FROM cart_items
+            WHERE cart_id IN (
+                SELECT id
+                FROM carts
+                WHERE user_id = ?
+            );
+        ");
+ 
+        $stmt->execute([
+            $user_id
+        ]);
+ 
+        return [
+            "affected_rows" => (int)$stmt->rowCount()
+        ];
     }
 }
 ?>

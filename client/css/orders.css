@@ -1,0 +1,80 @@
+/* Admin orders page: extends index.css + navbar.css + history.css */
+
+/* Status filter chips (soft fills, no borders) */
+.order-filters {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  padding-bottom: .25rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+.order-filters::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 0;
+  background: var(--primary);
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 600;
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  transition: background .2s, color .2s;
+}
+.filter-chip i { color: var(--accent); }
+.filter-chip:hover { background: var(--hover); }
+.filter-chip.is-active { background: var(--accent); color: var(--primary); }
+.filter-chip.is-active i { color: var(--primary); }
+.chip-count {
+  background: var(--secondary);
+  color: var(--muted);
+  font-size: .75rem;
+  padding: .05rem .5rem;
+  border-radius: 999px;
+}
+.filter-chip.is-active .chip-count { background: rgba(255, 255, 255, .25); color: var(--primary); }
+
+/* Cards fade in */
+#order-list > * { animation: order-in .4s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes order-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* Popup: items list */
+.modal-section-title {
+  text-align: left;
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 .5rem;
+}
+.modal-section-title i { color: var(--accent); margin-right: .4rem; }
+
+.modal-items {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: .35rem 1.1rem;
+  background: var(--primary);
+  border-radius: 1.1rem;
+  text-align: left;
+}
+.modal-items:empty { display: none; }
+.modal-items li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: .7rem 0;
+}
+.modal-items li + li { border-top: 1px solid var(--border); }
+.item-name { min-width: 0; overflow-wrap: anywhere; }
+.item-qty { color: var(--muted); font-size: .88rem; margin-left: .35rem; }
+.item-price { color: var(--accent); font-weight: 600; white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  #order-list > * { animation: none; }
+}

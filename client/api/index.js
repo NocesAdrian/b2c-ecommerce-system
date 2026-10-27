@@ -8,7 +8,7 @@ const api_endpoint = {
 
 async function auth(api_endpoint) {
     const response = await fetch(api_endpoint.auth, {
-        method: "GET",
+        method: "POST",
         credentials: "include"
     });
 
@@ -17,11 +17,13 @@ async function auth(api_endpoint) {
     if (response.ok && body.authenticated) {
         console.log(body.user);
         if (body.user.role_id > 1) {
-            window.location.href = "pages/customer.html";
+            window.open("pages/customer.html", "_blank");
+            window.close();
             return;
         }
 
-        window.location.href = "pages/admin.html";
+        window.open("pages/admin.html", "_blank");
+        window.close()
         return;
     }
     console.log("Not authenticated");

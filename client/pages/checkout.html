@@ -119,7 +119,8 @@
             <strong id="summaryTotal">₱0</strong>
           </div>
 
-          <button type="button" class="btn btn-d pay-btn" id="payBtn">
+          <button type="button" class="btn btn-d pay-btn" id="payBtn" data-bs-toggle="modal"
+            data-bs-target="#gcashModal">
             <i class="bi bi-shield-check me-2"></i><span>Confirm checkout and pay</span>
           </button>
           <a href="carts.html" class="btn btn-ghost pay-cancel">Back to cart</a>
@@ -141,12 +142,47 @@
     </li>
   </template>
 
+  <!-- GCASH PAYMENT POPUP -->
+  <div class="modal fade gcash-modal" id="gcashModal" tabindex="-1" aria-labelledby="gcashTitle" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div class="gcash-icon" id="gcashIcon"><i class="bi bi-qr-code-scan"></i></div>
+          <h2 class="gcash-title" id="gcashTitle">Pay with GCash</h2>
+          <p class="gcash-text" id="gcashText">Scan the QR code with your GCash app, then tap Done.</p>
+
+          <!-- Put your GCash QR image at ../images/gcash-qr.png (or change the src) -->
+          <div class="gcash-qr" id="gcashQr">
+            <img src="../images/gcash-qr.png" alt="GCash QR code">
+          </div>
+
+          <div class="gcash-amount" id="gcashAmountRow">
+            <span>Amount to pay</span>
+            <strong id="gcashTotal">₱0.00</strong>
+          </div>
+
+          <p class="gcash-error d-none" id="gcashError" role="alert">Couldn't place your order. Please try again.</p>
+
+          <div class="d-grid gap-2" id="gcashActions">
+            <button type="button" class="btn btn-d" id="gcashDoneBtn">
+              <i class="bi bi-check2 me-2"></i>Done
+            </button>
+            <button type="button" class="btn btn-soft" id="gcashLaterBtn">Pay later</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>
-  <script src="../scripts/checkout.js"></script>
   <script type="module" src="../api/logout.js"></script>
   <script type="module" src="../api/auth.js"></script>
   <script type="module" src="../api/delete-sessions.js"></script>
+  <script type="module" src="../api/checkout.js"></script>
 </body>
 
 </html>

@@ -30,8 +30,8 @@ require_once __DIR__."/api/categories.php";
 require_once __DIR__."/api/products.php";
 require_once __DIR__."/api/auth.php";
 require_once __DIR__."/api/delivery_locations.php";
-// require_once __DIR__."/api/carts.php";
-// require_once __DIR__."/api/orders.php";
+require_once __DIR__."/api/carts.php";
+require_once __DIR__."/api/orders.php";
 // require_once __DIR__."/api/categories.php";
 
 http_response_code(404);

@@ -43,7 +43,15 @@ switch ($requested_route) {
         $user_id = $author["user_id"];
         $user_id = $carts->validateID($user_id, "users");
 
-        echo json_encode($carts->insert(["user_id"], [$user_id]));
+        $result = $carts->insert(["user_id"], [$user_id]);
+
+        if ($result["affected_rows"] < 1) {
+            http_response_code(500);
+            exit(-1);
+        };
+
+        http_response_code(201);
+        echo json_encode($result);
 
         exit(0);
 /*
@@ -141,6 +149,26 @@ switch ($requested_route) {
         );
         exit;
 
+    case "/api/carts/items/user":
+        $token = $_COOKIE["token"] ?? '';
+        $token = $sessions->validateToken($token);
+
+        $token_hash = hash("sha256", $token);
+        $author = $sessions->getByToken($token_hash);
+
+        if ($author === false) {
+            http_response_code(401);
+            echo json_encode(["error" => "Session expired or invalid"]);
+            exit;
+        }
+
+        echo json_encode([
+            "items" => $cartItems->getUserItems($author["user_id"]),
+            "grand_total" => $cartItems->getUserGrandTotal($author["user_id"])
+        ]);
+
+        exit(0);
+
 
     case "/api/carts/items/create":
         $token = $_COOKIE["token"] ?? '';
@@ -186,12 +214,33 @@ switch ($requested_route) {
             exit;
         }
 
-        echo json_encode(
-            $cartItems->insert(
-                ["cart_id", "product_id", "quantity"],
-                [$cart[0]["id"], $product_id, $quantity]
-            )
+        $existing_item = $cartItems->getItem(
+            (int) $cart[0]["id"],
+            $product_id
         );
+
+        if ($existing_item !== false) {
+
+            http_response_code(200);
+            $new_quantity = (int) $existing_item["quantity"] + $quantity;
+            
+            $cartItems->updateQuantity(
+                (int) $cart[0]["id"],
+                $product_id,
+                $new_quantity
+            );
+
+            echo json_encode(["message" => "Cart updated successfully"]);   
+            exit(0);
+        } 
+        
+        $cartItems->insert(
+            ["cart_id", "product_id", "quantity"],
+            [$cart[0]["id"], $product_id, $quantity]
+        );
+
+        http_response_code(201);
+        echo json_encode(["message" => "Cart updated successfully"]);
         exit;
 
     case "/api/carts/items/delete":

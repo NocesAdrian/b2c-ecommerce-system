@@ -10,6 +10,10 @@
   <link href="../css/index.css" rel="stylesheet">
   <link href="../css/navbar.css" rel="stylesheet">
   <link rel="stylesheet" href="../css/product-card.css">
+  <link rel="stylesheet" href="../css/checkout-bar.css">
+  <link rel="stylesheet" href="../css/browse.css">
+  <!-- Category chips, loading skeleton and tighter category spacing. Keep LAST. -->
+  <link rel="stylesheet" href="../css/browse-art.css">
 </head>
 
 <body>
@@ -23,13 +27,22 @@
 
         <form class="nav-search" role="search" data-ui-only>
           <i class="bi bi-search"></i>
-          <input type="search" class="form-control" placeholder="Search merchandise" aria-label="Search">
+          <input type="search" class="form-control" id="product-search" placeholder="Search merchandise or category" aria-label="Search merchandise or category">
         </form>
 
-        <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
-          aria-controls="sideMenu" aria-label="Open menu">
-          <i class="bi bi-list"></i>
-        </button>
+        <!-- Quick links (Browse page only): Carts | History | menu -->
+        <div class="nav-actions">
+          <a class="menu-btn" href="carts.html" aria-label="Carts" title="Carts">
+            <i class="bi bi-bag"></i>
+          </a>
+          <a class="menu-btn" href="history.html" aria-label="History" title="History">
+            <i class="bi bi-clock-history"></i>
+          </a>
+          <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+            aria-controls="sideMenu" aria-label="Open menu">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
 
       </div>
     </div>
@@ -79,16 +92,55 @@
     </div>
   </div>
 
-  <!-- Page content (replace with your page) -->
-  <main class="container demo-main">
-    <div class="demo-card">
-      <p class="eyebrow mb-2">Customer</p>
-      <h2 class="section-title mb-2">Browse</h2>
-      <p class="text-muted-d mb-0">Explore Despera merchandise.</p>
+  <main class="container demo-main browse-page">
+
+    <!-- Welcome hero -->
+    <section class="browse-hero">
+      <span class="hero-ring hero-ring-a" aria-hidden="true"></span>
+      <span class="hero-ring hero-ring-b" aria-hidden="true"></span>
+      <div class="hero-icon" aria-hidden="true"><i class="bi bi-wifi"></i></div>
+
+      <div class="hero-copy">
+        <span class="hero-tag"><i class="bi bi-stars"></i> New merch for you</span>
+        <h2 class="hero-title">Something small &amp; soft, just for you.</h2>
+        <p class="hero-text">Cute things for the ones who never logged off.</p>
+      </div>
+    </section>
+
+    <!-- Shelf heading -->
+    <div class="shelf-head">
+      <h3 class="shelf-title"><i class="bi bi-stars"></i>Fresh picks</h3>
+      <p class="shelf-text">Tap a card to take a closer look.</p>
     </div>
 
-    <div id="product-list" class="row g-3 mt-3">
-      <!-- Product cards are inserted here -->
+    <!-- Category chips: filled in by ../api/products.js once categories load -->
+    <div class="ba-chips" id="category-chips" role="group" aria-label="Filter by category" hidden></div>
+
+    <div id="product-list" class="row g-3 mt-1" aria-live="polite">
+      <!-- Product cards are inserted here. The skeleton shows until they arrive. -->
+      <div class="ba-skel-grid" aria-hidden="true">
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+        <div class="ba-skel"></div>
+      </div>
+    </div>
+
+    <!-- Checkout bar: only visible when the cart has items (see ../api/cart-bar.js) -->
+    <div class="checkout-bar d-none" id="checkout-bar">
+      <div class="checkout-bar-inner">
+        <div class="bar-info">
+          <div class="bar-count"><i class="bi bi-bag-check"></i><span id="bar-count">0 items in your cart</span></div>
+          <div class="bar-total" id="bar-total">₱0.00</div>
+        </div>
+        <a href="checkout.html" class="btn btn-d checkout-btn disabled" id="checkout-btn">
+          Checkout <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
     </div>
   </main>
 
@@ -116,6 +168,7 @@
   <script type="module" src="../api/auth.js"></script>
   <script type="module" src="../api/delete-sessions.js"></script>
   <script type="module" src="../api/products.js"></script>
+  <script type="module" src="../api/cart-bar.js"></script>
 </body>
 
 </html>

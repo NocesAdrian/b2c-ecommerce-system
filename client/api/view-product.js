@@ -4,8 +4,66 @@ import { initQuantityController } from "../scripts/view-product.js";
 const config = get_config();
 
 const api_endpoint = {
-    product: `${config.api_src}/api/products/product`
+    product: `${config.api_src}/api/products/product`,
+    addCartItem: `${config.api_src}/api/carts/items/create`,
 };
+
+async function add_to_cart(api_endpoint) {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) {
+        console.error("Product ID is missing from the URL.");
+        return;
+    }
+
+    const qty = document.getElementById("qty").value;
+
+    if (!Number.isInteger(Number(qty)) || Number(qty) < 1) {
+        console.error("Quantity must be a positive integer.");
+        return;
+    }
+
+    const item = {
+        "product_id": id,
+        "quantity": Number(qty)
+    };
+
+    try {
+        const response = await fetch(api_endpoint.addCartItem, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(item)
+        });
+
+        const body = await response.json().catch(() => ({}));
+
+        console.log("Cart API status:", response.status);
+        console.log("Cart API response:", body);
+
+        if (response.status === 201) {
+            console.log("Added to cart");
+            return
+        } 
+
+        if (response.status === 200) {
+            console.log("cart updated");
+            return
+        }
+
+        console.error(
+            body.error || `Failed to add product to cart. Status: ${response.status}`
+        );
+
+        
+
+    } catch (error) {
+        console.error("Request failed:", error);
+    }
+}
 
 async function render_product(api_endpoint) {
     const product_category = document.getElementById("product-category");
@@ -54,6 +112,7 @@ async function render_product(api_endpoint) {
         subtotal.textContent = `₱${Number(body.unit_price).toFixed(2)}`;
 
         initQuantityController();
+
         return body;
     }
 
@@ -63,4 +122,14 @@ async function render_product(api_endpoint) {
 
 window.addEventListener("DOMContentLoaded", () => {
     render_product(api_endpoint);
+});
+
+function goBrowse() {
+    window.open("customer.html", "_blank");
+    window.close();
+}
+const add_to_cart_btn = document.getElementById("addBtn");
+add_to_cart_btn.addEventListener("click", () => {   
+    add_to_cart(api_endpoint)
+    setTimeout(goBrowse, 1000);
 });

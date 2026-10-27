@@ -87,10 +87,7 @@ CREATE TABLE orders (
     location_id INT NULL,
     status VARCHAR(30) NOT NULL DEFAULT 'pending' 
         COMMENT 'pending, paid, delivered',
-    payment_method VARCHAR(30) NOT NULL DEFAULT 'gcash'
-        COMMENT 'cash on delivery, online payment',
-    payment_status VARCHAR(30) NOT NULL DEFAULT 'unpaid'
-        COMMENT 'unpaid, paid',
+    payment_method VARCHAR(30) NOT NULL DEFAULT 'gcash',
     total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,

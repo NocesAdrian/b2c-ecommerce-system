@@ -133,3 +133,64 @@
   .items-card { border-radius: 2rem; }
   .summary-card { border-radius: 2rem; padding: 2rem; position: sticky; top: 6rem; }
 }
+
+/* ---------- GCash payment popup ---------- */
+.gcash-modal .modal-content {
+  background: var(--secondary);
+  border: 0;
+  border-radius: 1.5rem;
+}
+.gcash-modal .modal-body { padding: 2rem 1.5rem 1.5rem; text-align: center; }
+.gcash-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.gcash-title { font-size: 1.3rem; font-weight: 600; margin-bottom: .35rem; }
+.gcash-text { color: var(--muted); margin-bottom: 1.25rem; }
+
+.gcash-qr {
+  background: var(--primary);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  width: min(100%, 17rem);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gcash-qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.gcash-qr.is-missing img { display: none; }
+.gcash-qr.is-missing::after {
+  content: "Add your GCash QR image at images/gcash-qr.png";
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.gcash-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--primary);
+  border-radius: 1rem;
+  padding: .85rem 1.1rem;
+  margin-bottom: 1.25rem;
+  color: var(--muted);
+}
+.gcash-amount strong { font-size: 1.3rem; color: var(--accent); }
+
+@media (min-width: 992px) {
+  .gcash-modal .modal-content { border-radius: 2rem; }
+  .gcash-modal .modal-body { padding: 2.5rem 2.25rem 2rem; }
+}
+
+.gcash-error { color: var(--muted); font-size: .88rem; margin: -.25rem 0 1rem; }
+.gcash-error::before { content: "\f33a"; font-family: "bootstrap-icons"; color: var(--accent); margin-right: .4rem; }

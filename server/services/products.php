@@ -69,5 +69,35 @@ class ProductRepository extends BaseRepository
         return $stmt->fetch();
     }
 
+    public function countAll() : array
+    {
+        $stmt = $this->db->prepare
+        ("
+            SELECT COUNT(*) AS total_products
+            FROM products;
+        ");
+ 
+        $stmt->execute();
+ 
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
+        return [
+            "total_products" => (int)$row["total_products"]
+        ];
+    }
+
+    public function getCategories() : array
+    {
+        $stmt = $this->db->prepare
+        ("
+            SELECT id, name
+            FROM categories
+            ORDER BY name;
+        ");
+ 
+        $stmt->execute();
+ 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

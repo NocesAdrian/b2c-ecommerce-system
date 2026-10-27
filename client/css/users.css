@@ -1,0 +1,137 @@
+/* Admin users page: extends index.css + navbar.css + history.css */
+
+.users-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+/* Role filter chips (soft fills, no borders) */
+.user-filters {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  padding-bottom: .25rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+.user-filters::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 0;
+  background: var(--primary);
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 600;
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  transition: background .2s, color .2s;
+}
+.filter-chip i { color: var(--accent); }
+.filter-chip:hover { background: var(--hover); }
+.filter-chip.is-active { background: var(--accent); color: var(--primary); }
+.filter-chip.is-active i { color: var(--primary); }
+.chip-count {
+  background: var(--secondary);
+  color: var(--muted);
+  font-size: .75rem;
+  padding: .05rem .5rem;
+  border-radius: 999px;
+}
+.filter-chip.is-active .chip-count { background: rgba(255, 255, 255, .25); color: var(--primary); }
+
+/* User cards */
+#user-list > * { animation: user-in .4s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes user-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.user-row-card {
+  background: var(--primary);
+  border-radius: 1.25rem;
+  padding: 1.1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: background .2s, transform .2s;
+}
+.user-row-card:hover { background: var(--hover); transform: translateY(-2px); }
+
+.user-row-top { display: flex; align-items: center; gap: .85rem; }
+.user-row-avatar {
+  flex: none;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: background .2s;
+}
+.user-row-card:hover .user-row-avatar { background: var(--primary); }
+.user-row-heading { flex: 1; min-width: 0; }
+.user-row-name { font-size: 1.05rem; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+.user-row-meta { color: var(--muted); font-size: .85rem; margin: 0; }
+.user-row-card:hover .pill { background: var(--primary); }
+.user-row-card:hover .pill-solid { background: var(--accent); }
+
+.user-row-card .admin-actions { display: flex; gap: .5rem; margin-top: auto; }
+.user-row-card .edit-btn { flex: 1; }
+.user-row-card .delete-btn { flex: none; }
+.user-row-card .btn i { color: var(--accent); }
+.user-row-card .btn:disabled { opacity: .5; }
+
+/* Popup form */
+.user-form { text-align: left; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; color: var(--muted); font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .35rem; }
+.field-hint { color: var(--muted); font-size: .82rem; }
+.field-input {
+  width: 100%;
+  background: var(--primary);
+  color: var(--text);
+  border: 0;
+  border-radius: 1rem;
+  padding: .75rem 1rem;
+  font: inherit;
+  transition: background .2s, box-shadow .2s;
+}
+.field-input:hover { background: var(--hover); }
+.field-input:focus { outline: 0; background: var(--primary); box-shadow: 0 0 0 2px var(--accent); }
+
+.password-wrap { position: relative; }
+.password-wrap .field-input { padding-right: 3rem; }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: .5rem;
+  transform: translateY(-50%);
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+}
+.password-toggle:hover { background: var(--secondary); }
+
+.user-form .modal-error { justify-content: flex-start; }
+
+@media (min-width: 992px) {
+  .users-head { margin-bottom: 1.75rem; }
+  .user-row-card { padding: 1.35rem; border-radius: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #user-list > * { animation: none; }
+  .user-row-card:hover { transform: none; }
+}

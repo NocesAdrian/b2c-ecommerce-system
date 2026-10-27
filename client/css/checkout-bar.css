@@ -1,0 +1,46 @@
+/* Checkout bar: shared by Browse and Carts. Extends index.css (color variables). */
+
+.checkout-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 1010;
+  padding: .75rem 0 1rem;
+  margin-top: 1.5rem;
+  background: linear-gradient(to top, var(--secondary) 70%, rgba(246, 245, 244, 0));
+}
+.checkout-bar-inner {
+  background: var(--primary);
+  border-radius: 1.5rem;
+  padding: .85rem .85rem .85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 6px 24px rgba(51, 44, 37, .08);
+  animation: bar-rise .35s ease both;
+}
+@keyframes bar-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.bar-info { min-width: 0; }
+.bar-count {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--muted);
+  font-size: .88rem;
+}
+.bar-count i { color: var(--accent); }
+.bar-total { font-size: 1.3rem; font-weight: 600; line-height: 1.2; }
+.checkout-btn { white-space: nowrap; display: inline-flex; align-items: center; }
+.checkout-btn.disabled { background: var(--hover); color: var(--muted); pointer-events: none; }
+
+@media (min-width: 992px) {
+  .checkout-bar-inner { border-radius: 2rem; padding: 1rem 1rem 1rem 2rem; }
+  .bar-total { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkout-bar-inner { animation: none; }
+}
