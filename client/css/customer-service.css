@@ -1,10 +1,11 @@
-.customer-service-page { padding-top: 2rem; padding-bottom: 4rem; }
+.customer-service-page { padding-top: 1.5rem; padding-bottom: 4rem; }
 .service-heading { padding: 0 0 1.5rem; }
 .service-layout {
   display: grid;
-  grid-template-columns: minmax(15rem, .75fr) minmax(0, 1.4fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
   align-items: stretch;
+  padding: 0;
 }
 .service-context,
 .service-chat {
@@ -49,7 +50,14 @@
 .service-update-group ul { padding-left: 1.15rem; margin: 0; color: var(--text); font-size: .86rem; }
 .service-update-group li + li { margin-top: .35rem; }
 .service-disclaimer { margin: 1.25rem 0 0; }
-.service-chat { display: flex; flex-direction: column; min-height: 34rem; overflow: hidden; }
+.service-chat {
+  display: flex;
+  flex-direction: column;
+  height: 30rem;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
 .service-chat-heading {
   display: flex;
   align-items: center;
@@ -61,17 +69,17 @@
 .service-chat-heading h3 { margin: 0 0 .2rem; }
 .chat-messages {
   display: flex;
-  flex: 1;
+  flex: 1 1 0;
   flex-direction: column;
   gap: .8rem;
-  max-height: 34rem;
-  min-height: 18rem;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.25rem;
 }
 .chat-status { color: var(--muted); text-align: center; margin: auto; }
 .chat-message {
-  max-width: min(85%, 34rem);
+  max-width: min(85%, 44rem);
   border-radius: 1rem;
   padding: .8rem 1rem;
   overflow-wrap: anywhere;
@@ -151,11 +159,72 @@
   font-size: .9rem;
 }
 .chat-form { display: flex; align-items: flex-end; gap: .65rem; padding: 1rem 1.25rem .4rem; border-top: 1px solid var(--border); }
-.chat-form .form-control { resize: vertical; min-height: 3.2rem; max-height: 9rem; border-radius: 1rem; }
-.chat-send { width: 3.2rem; height: 3.2rem; flex: none; padding: 0; }
+.chat-form .form-control {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 3.2rem;
+  max-height: 9rem;
+  resize: vertical;
+  border-radius: 1rem;
+}
+.chat-send {
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  flex: 0 0 3.2rem;
+  padding: 0;
+  margin: 0 0 1px;
+}
 .chat-input-note { color: var(--muted); font-size: .75rem; margin: 0; padding: 0 1.5rem 1rem; }
 
-@media (max-width: 767.98px) {
-  .service-layout { grid-template-columns: 1fr; }
-  .service-chat { min-height: 30rem; }
+@media (min-width: 992px) {
+  .customer-service-page {
+    max-width: 1180px;
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+  }
+
+  .service-heading {
+    margin-bottom: .35rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .service-layout {
+    grid-template-columns: minmax(17rem, .72fr) minmax(0, 1.55fr);
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .service-context,
+  .service-chat {
+    border-radius: 1.75rem;
+  }
+
+  .service-context {
+    padding: 1.75rem;
+  }
+
+  .service-chat {
+    height: clamp(32rem, calc(100vh - 12rem), 42rem);
+  }
+
+  .chat-messages {
+    min-height: 0;
+    padding: 1.5rem;
+  }
+
+  .chat-form {
+    gap: .85rem;
+    padding: 1.1rem 1.5rem .5rem;
+  }
+
+  .chat-input-note {
+    padding: 0 1.75rem 1.1rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .service-layout { grid-template-columns: minmax(0, 1fr); }
+  .service-chat { height: 30rem; }
 }

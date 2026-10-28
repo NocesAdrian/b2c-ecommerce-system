@@ -89,6 +89,9 @@
         <a href="orders.html" class="side-link">
           <i class="bi bi-clipboard-check"></i><span>Orders</span>
         </a>
+        <a href="reports.html" class="side-link">
+          <i class="bi bi-printer"></i><span>Reports</span>
+        </a>
         <a href="users.html" class="side-link">
           <i class="bi bi-person-gear"></i><span>Users</span>
         </a>
@@ -117,9 +120,12 @@
         <h2 class="section-title mb-1">Merch dashboard</h2>
         <p class="text-muted-d mb-0">Sales performance, inventory health, and what needs your attention.</p>
       </div>
-      <button type="button" class="btn btn-soft" id="refresh-btn">
-        <i class="bi bi-arrow-repeat me-2"></i>Refresh
-      </button>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-soft" href="reports.html"><i class="bi bi-printer me-2"></i>Print reports</a>
+        <button type="button" class="btn btn-soft" id="refresh-btn">
+          <i class="bi bi-arrow-repeat me-2"></i>Refresh
+        </button>
+      </div>
     </div>
     <p class="dash-search-status d-none" id="dashboard-search-status" role="status" aria-live="polite"></p>
 

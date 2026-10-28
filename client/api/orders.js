@@ -20,9 +20,12 @@ const status_icons = {
 };
 
 const filter_names = ["all", "pending", "paid", "delivered", "cancelled"];
+const date_filter_names = ["all", "today", "week", "month", "last-7", "last-30", "custom"];
 
 let all_orders = [];
 let active_filter = "all";
+let active_date_filter = "all";
+let custom_date_range = { start: "", end: "" };
 let search_text = "";
 let selected_order = null;
 let order_modal = null;
@@ -57,6 +60,45 @@ function format_date(date_text) {
 
 function order_time(order) {
     return new Date(String(order.date_created).replace(" ", "T")).getTime() || 0;
+}
+
+function date_key(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function order_date_key(order) {
+    const date = String(order.date_created || "");
+    return /^\d{4}-\d{2}-\d{2}/.test(date) ? date.slice(0, 10) : "";
+}
+
+function date_range() {
+    const today = new Date();
+    const today_key = date_key(today);
+
+    switch (active_date_filter) {
+        case "today":
+            return { start: today_key, end: today_key };
+        case "week": {
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+            return { start: date_key(monday), end: today_key };
+        }
+        case "month":
+            return { start: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`, end: today_key };
+        case "last-7":
+        case "last-30": {
+            const start = new Date(today);
+            start.setDate(today.getDate() - (active_date_filter === "last-7" ? 6 : 29));
+            return { start: date_key(start), end: today_key };
+        }
+        case "custom":
+            return custom_date_range;
+        default:
+            return { start: "", end: "" };
+    }
 }
 
 function method_name(method) {
@@ -136,6 +178,12 @@ function matches(order) {
         return false;
     }
 
+    const { start, end } = date_range();
+    const order_date = order_date_key(order);
+    if ((start && (!order_date || order_date < start)) || (end && (!order_date || order_date > end))) {
+        return false;
+    }
+
     if (!search_text) {
         return true;
     }
@@ -162,9 +210,13 @@ function show_state(icon, title, text, show_retry = false) {
 function update_counts() {
     document.querySelectorAll(".filter-chip").forEach(chip => {
         const name = chip.dataset.filter;
-        const count = name === "all"
-            ? all_orders.length
-            : all_orders.filter(order => order.status === name).length;
+        const { start, end } = date_range();
+        const count = all_orders.filter(order => {
+            const order_date = order_date_key(order);
+            const in_date_range = (!start || (order_date && order_date >= start))
+                && (!end || (order_date && order_date <= end));
+            return in_date_range && (name === "all" || order.status === name);
+        }).length;
 
         chip.querySelector(".chip-count").textContent = count;
     });
@@ -183,14 +235,31 @@ function render_orders() {
         .filter(matches)
         .sort((a, b) => (order_time(b) - order_time(a)) || (Number(b.id) - Number(a.id)));
 
+    const visible_orders = all_orders.filter(order => {
+        const { start, end } = date_range();
+        const order_date = order_date_key(order);
+        return (!start || (order_date && order_date >= start))
+            && (!end || (order_date && order_date <= end));
+    }).length;
+    const date_label = {
+        all: "all time",
+        today: "today",
+        week: "this week",
+        month: "this month",
+        "last-7": "the last 7 days",
+        "last-30": "the last 30 days",
+        custom: "the selected dates"
+    }[active_date_filter];
     document.getElementById("orders-summary").textContent =
-        `${shown.length} of ${all_orders.length} ${all_orders.length === 1 ? "order" : "orders"}`;
+        active_date_filter === "all"
+            ? `${shown.length} of ${all_orders.length} ${all_orders.length === 1 ? "order" : "orders"}`
+            : `${shown.length} of ${visible_orders} ${visible_orders === 1 ? "order" : "orders"} · ${date_label}`;
 
     if (shown.length === 0) {
         if (all_orders.length === 0) {
             show_state("bi-inbox", "No orders yet", "Orders placed by customers will show up here.");
         } else {
-            show_state("bi-search", "No matching orders", "Try another filter or search.");
+            show_state("bi-search", "No matching orders", "Try another date range, status, or search.");
         }
         return;
     }
@@ -428,6 +497,51 @@ window.addEventListener("DOMContentLoaded", () => {
             other.setAttribute("aria-selected", String(is_active));
         });
 
+        render_orders();
+    });
+
+    document.getElementById("date-filter-presets").addEventListener("click", event => {
+        const button = event.target.closest(".date-filter-chip");
+
+        if (!button || !date_filter_names.includes(button.dataset.dateFilter)) {
+            return;
+        }
+
+        active_date_filter = button.dataset.dateFilter;
+        custom_date_range = { start: "", end: "" };
+        document.getElementById("order-date-start").value = "";
+        document.getElementById("order-date-end").value = "";
+        document.getElementById("date-filter-error").classList.add("d-none");
+
+        document.querySelectorAll(".date-filter-chip").forEach(chip => {
+            const is_active = chip === button;
+            chip.classList.toggle("is-active", is_active);
+            chip.setAttribute("aria-pressed", String(is_active));
+        });
+
+        render_orders();
+    });
+
+    document.getElementById("custom-date-filter").addEventListener("submit", event => {
+        event.preventDefault();
+        const start = document.getElementById("order-date-start").value;
+        const end = document.getElementById("order-date-end").value;
+        const error = document.getElementById("date-filter-error");
+
+        if (start && end && start > end) {
+            error.textContent = "The start date must be on or before the end date.";
+            error.classList.remove("d-none");
+            return;
+        }
+
+        custom_date_range = { start, end };
+        active_date_filter = start || end ? "custom" : "all";
+        error.classList.add("d-none");
+        document.querySelectorAll(".date-filter-chip").forEach(chip => {
+            const is_active = chip.dataset.dateFilter === active_date_filter;
+            chip.classList.toggle("is-active", is_active);
+            chip.setAttribute("aria-pressed", String(is_active));
+        });
         render_orders();
     });
 

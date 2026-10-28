@@ -14,6 +14,39 @@ $author = requireAuthenticatedUser($sessions);
 $customer_service = new CustomerServiceRepository($db_path);
 
 switch ($requested_route) {
+    case "/api/customer-service/greeting":
+        if ($_SERVER["REQUEST_METHOD"] !== "GET") {
+            http_response_code(405);
+            header("Allow: GET");
+            echo json_encode(["error" => "Method not allowed"]);
+            exit;
+        }
+
+        $assistant = new GeminiCustomerAssistant();
+        if (!$assistant->isConfigured()) {
+            http_response_code(503);
+            echo json_encode(["error" => "AI customer service is not configured yet."]);
+            exit;
+        }
+
+        try {
+            $greeting = $assistant->reply(
+                [[
+                    "sender" => "user",
+                    "message" => "Write a brief personalized welcome notification for this login. Summarize the current order status counts and the most relevant recent updates for this user. For an admin, mention store-wide pending orders, overall statuses, and new products when present. For a customer, only discuss that customer's orders and relevant new products. Be accurate, friendly, and concise (up to 3 short sentences). Do not use Markdown, mention AI, or refer to missing data."
+                ]],
+                $customer_service->getAssistantContext($author)
+            );
+        } catch (RuntimeException $error) {
+            error_log("Customer service login greeting error: ".$error->getMessage());
+            http_response_code(503);
+            echo json_encode(["error" => $error->getMessage()]);
+            exit;
+        }
+
+        echo json_encode(["greeting" => $greeting]);
+        exit;
+
     case "/api/customer-service/updates":
         if ($_SERVER["REQUEST_METHOD"] !== "GET") {
             http_response_code(405);

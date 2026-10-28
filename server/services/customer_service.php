@@ -232,7 +232,7 @@ class GeminiCustomerAssistant
         return trim((string) getenv("GEMINI_API_KEY")) !== "";
     }
 
-    public function reply(array $history, array $context): string
+    public function reply(array $history, array $context, int $max_output_tokens = 2048): string
     {
         $api_key = trim((string) getenv("GEMINI_API_KEY"));
 
@@ -263,7 +263,7 @@ class GeminiCustomerAssistant
             "contents" => $contents,
             "generationConfig" => [
                 "temperature" => 0.3,
-                "maxOutputTokens" => 2048
+                "maxOutputTokens" => $max_output_tokens
             ]
         ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 

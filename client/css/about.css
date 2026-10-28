@@ -93,6 +93,15 @@
 }
 .about-person h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: .35rem; }
 .about-person p:last-child { color: var(--muted); }
+.about-facebook-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: .8rem;
+  padding: .45rem .9rem;
+  font-size: .85rem;
+}
+.about-facebook-link i { color: #1877f2; font-size: 1rem; }
 
 .about-coffee {
   display: flex;

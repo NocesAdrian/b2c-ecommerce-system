@@ -38,6 +38,83 @@
 }
 .filter-chip.is-active .chip-count { background: rgba(255, 255, 255, .25); color: var(--primary); }
 
+.orders-filter-panel {
+  display: grid;
+  gap: 1.25rem;
+  background: var(--primary);
+  border: 1px solid rgba(51, 44, 37, .055);
+  border-radius: 1.25rem;
+  box-shadow: 0 .75rem 2rem rgba(51, 44, 37, .045);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.orders-filter-title {
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin: 0 0 .6rem;
+  text-transform: uppercase;
+}
+
+.orders-filter-panel .order-filters {
+  flex-wrap: wrap;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+}
+
+.date-filter-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+
+.date-filter-chip {
+  flex: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--text);
+  font-size: .8rem;
+  font-weight: 600;
+  padding: .4rem .8rem;
+  transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+}
+.date-filter-chip:hover { background: var(--hover); }
+.date-filter-chip.is-active {
+  border-color: var(--accent);
+  background: rgba(128, 106, 79, .1);
+  color: var(--text);
+}
+
+.custom-date-filter {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: .75rem;
+}
+.custom-date-filter label { display: grid; gap: .3rem; }
+.custom-date-filter label span {
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 600;
+}
+.custom-date-filter .form-control {
+  min-width: 10rem;
+  padding: .45rem .6rem;
+  font-size: .85rem;
+}
+.custom-date-filter .btn { min-height: 2.45rem; }
+.date-filter-error {
+  flex-basis: 100%;
+  color: #8d3932;
+  font-size: .82rem;
+  margin: 0;
+}
+
 /* Cards fade in */
 #order-list > * { animation: order-in .4s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes order-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -77,4 +154,51 @@
 
 @media (prefers-reduced-motion: reduce) {
   #order-list > * { animation: none; }
+}
+
+@media (min-width: 992px) {
+  .orders-filter-panel {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr);
+    align-items: start;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .orders-status-filter {
+    padding-right: 1.25rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .orders-filter-panel .order-filters {
+    gap: .45rem;
+  }
+
+  .orders-filter-panel .filter-chip {
+    padding: .45rem .8rem;
+    font-size: .84rem;
+  }
+
+  .orders-date-filter {
+    min-width: 0;
+  }
+
+  .custom-date-filter {
+    flex-wrap: nowrap;
+  }
+
+  .custom-date-filter .date-filter-error {
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .orders-filter-panel {
+    grid-template-columns: minmax(25rem, .95fr) minmax(0, 1.35fr);
+    gap: 2rem;
+    padding: 1.35rem 1.75rem;
+  }
+
+  .orders-status-filter {
+    padding-right: 2rem;
+  }
 }

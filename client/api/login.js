@@ -41,6 +41,7 @@ async function login(api_endpoint) {
         const body = await response.json().catch(() => ({}));
 
         if (response.status === 200) {
+            sessionStorage.removeItem(`customer-service-greeting-v1-${body.user.user_id ?? body.user.id}`);
             sessionStorage.removeItem(`customer-service-updates-${body.user.user_id ?? body.user.id}`);
             if (body.user.role_id > 1) {
                 window.location.replace("customer.html");

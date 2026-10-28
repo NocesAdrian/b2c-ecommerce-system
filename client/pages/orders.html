@@ -88,6 +88,9 @@
         <a href="orders.html" class="side-link active" aria-current="page">
           <i class="bi bi-clipboard-check"></i><span>Orders</span>
         </a>
+        <a href="reports.html" class="side-link">
+          <i class="bi bi-printer"></i><span>Reports</span>
+        </a>
         <a href="users.html" class="side-link">
           <i class="bi bi-person-gear"></i><span>Users</span>
         </a>
@@ -116,14 +119,42 @@
       <p class="text-muted-d mb-0" id="orders-summary">Loading orders…</p>
     </div>
 
-    <!-- Status filter -->
-    <div class="order-filters" id="order-filters" role="tablist" aria-label="Filter orders by status">
-      <button type="button" class="filter-chip is-active" data-filter="all" role="tab" aria-selected="true">All <span class="chip-count">0</span></button>
-      <button type="button" class="filter-chip" data-filter="pending" role="tab" aria-selected="false"><i class="bi bi-hourglass-split"></i>Pending <span class="chip-count">0</span></button>
-      <button type="button" class="filter-chip" data-filter="paid" role="tab" aria-selected="false"><i class="bi bi-check-circle"></i>Paid <span class="chip-count">0</span></button>
-      <button type="button" class="filter-chip" data-filter="delivered" role="tab" aria-selected="false"><i class="bi bi-box-seam"></i>Delivered <span class="chip-count">0</span></button>
-      <button type="button" class="filter-chip" data-filter="cancelled" role="tab" aria-selected="false"><i class="bi bi-x-circle"></i>Cancelled <span class="chip-count">0</span></button>
-    </div>
+    <section class="orders-filter-panel" aria-label="Filter orders">
+      <div class="orders-status-filter">
+        <h3 class="orders-filter-title">Status</h3>
+        <div class="order-filters" id="order-filters" role="tablist" aria-label="Filter orders by status">
+          <button type="button" class="filter-chip is-active" data-filter="all" role="tab" aria-selected="true">All <span class="chip-count">0</span></button>
+          <button type="button" class="filter-chip" data-filter="pending" role="tab" aria-selected="false"><i class="bi bi-hourglass-split"></i>Pending <span class="chip-count">0</span></button>
+          <button type="button" class="filter-chip" data-filter="paid" role="tab" aria-selected="false"><i class="bi bi-check-circle"></i>Paid <span class="chip-count">0</span></button>
+          <button type="button" class="filter-chip" data-filter="delivered" role="tab" aria-selected="false"><i class="bi bi-box-seam"></i>Delivered <span class="chip-count">0</span></button>
+          <button type="button" class="filter-chip" data-filter="cancelled" role="tab" aria-selected="false"><i class="bi bi-x-circle"></i>Cancelled <span class="chip-count">0</span></button>
+        </div>
+      </div>
+
+      <div class="orders-date-filter">
+        <h3 class="orders-filter-title">Order date</h3>
+        <div class="date-filter-presets" id="date-filter-presets" aria-label="Date range">
+          <button type="button" class="date-filter-chip is-active" data-date-filter="all" aria-pressed="true">All time</button>
+          <button type="button" class="date-filter-chip" data-date-filter="today" aria-pressed="false">Today</button>
+          <button type="button" class="date-filter-chip" data-date-filter="week" aria-pressed="false">This week</button>
+          <button type="button" class="date-filter-chip" data-date-filter="month" aria-pressed="false">This month</button>
+          <button type="button" class="date-filter-chip" data-date-filter="last-7" aria-pressed="false">Last 7 days</button>
+          <button type="button" class="date-filter-chip" data-date-filter="last-30" aria-pressed="false">Last 30 days</button>
+        </div>
+        <form class="custom-date-filter" id="custom-date-filter">
+          <label>
+            <span>From</span>
+            <input class="form-control" type="date" id="order-date-start" aria-label="Start date">
+          </label>
+          <label>
+            <span>To</span>
+            <input class="form-control" type="date" id="order-date-end" aria-label="End date">
+          </label>
+          <button type="submit" class="btn btn-soft btn-sm">Apply dates</button>
+          <p class="date-filter-error d-none" id="date-filter-error" role="alert"></p>
+        </form>
+      </div>
+    </section>
 
     <div class="row g-3" id="order-list" aria-live="polite"></div>
 

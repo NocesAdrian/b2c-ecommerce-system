@@ -5,9 +5,11 @@ const api_endpoint = {
     login: `${config.api_src}/api/auth/login`,
     auth: `${config.api_src}/api/auth`,
     updates: `${config.api_src}/api/customer-service/updates`,
+    greeting: `${config.api_src}/api/customer-service/greeting`,
 }
 
 const role_admin = 1;
+const greeting_key_prefix = "customer-service-greeting-v1-";
 let session_check_timer;
 
 // Pages only admins may open (matched by file name)
@@ -51,7 +53,7 @@ function schedule_session_check(expires_in) {
     session_check_timer = window.setTimeout(() => auth(api_endpoint), delay);
 }
 
-function show_login_updates(updates) {
+function show_login_updates(updates, user) {
     const lines = [];
 
     if (updates.role === "customer") {
@@ -74,6 +76,10 @@ function show_login_updates(updates) {
         lines.push("No new order or product updates right now.");
     }
 
+    show_login_notification("Your store update", lines.join(" "), user);
+}
+
+function show_login_notification(title_text, message, user) {
     const container = document.createElement("div");
     container.className = "toast-container position-fixed bottom-0 end-0 p-3";
     container.style.zIndex = "1090";
@@ -88,7 +94,7 @@ function show_login_updates(updates) {
     header.className = "toast-header";
     const title = document.createElement("strong");
     title.className = "me-auto";
-    title.textContent = "Your store update";
+    title.textContent = title_text;
     const close = document.createElement("button");
     close.type = "button";
     close.className = "btn-close";
@@ -100,7 +106,7 @@ function show_login_updates(updates) {
     body.className = "toast-body";
     const summary = document.createElement("p");
     summary.className = "mb-2";
-    summary.textContent = lines.join(" ");
+    summary.textContent = message;
     const link = document.createElement("a");
     link.href = user.role_id === role_admin ? "customer-service.html?from=admin" : "customer-service.html";
     link.textContent = "Ask customer service";
@@ -121,27 +127,46 @@ async function load_login_updates(user) {
         return;
     }
 
-    const key = `customer-service-updates-${user.user_id}`;
+    const key = `${greeting_key_prefix}${user.user_id}`;
     if (sessionStorage.getItem(key)) {
         return;
     }
-    sessionStorage.setItem(key, "shown");
 
     try {
-        const response = await fetch(api_endpoint.updates, {
+        const response = await fetch(api_endpoint.greeting, {
             method: "GET",
             credentials: "include"
         });
-        const updates = await response.json();
+        const body = await response.json();
 
         if (!response.ok) {
-            throw new Error(updates.error || "Couldn't load store updates.");
+            throw new Error(body.error || "Couldn't load the AI login greeting.");
         }
 
-        show_login_updates(updates);
+        if (typeof body.greeting !== "string" || !body.greeting.trim()) {
+            throw new Error("The AI login greeting was empty.");
+        }
+
+        sessionStorage.setItem(key, "shown");
+        show_login_notification("Welcome back", body.greeting.trim(), user);
     } catch (error) {
-        sessionStorage.removeItem(key);
-        console.error("Failed to load login updates:", error);
+        console.error("Failed to load AI login greeting:", error);
+        try {
+            const response = await fetch(api_endpoint.updates, {
+                method: "GET",
+                credentials: "include"
+            });
+            const updates = await response.json();
+
+            if (!response.ok) {
+                throw new Error(updates.error || "Couldn't load store updates.");
+            }
+
+            sessionStorage.setItem(key, "shown");
+            show_login_updates(updates, user);
+        } catch (fallback_error) {
+            console.error("Failed to load fallback login updates:", fallback_error);
+        }
     }
 }
 

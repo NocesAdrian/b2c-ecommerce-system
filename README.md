@@ -8,10 +8,10 @@ A local-demo merchandise shop with customer browsing, carts, checkout, order his
 - Product browsing, search, categories, stock visibility, and cart quantity controls
 - Checkout with pending orders and a manual GCash demo confirmation
 - Inventory is deducted atomically when an order is marked paid; payment is rejected if stock is no longer available
-- Admin dashboard, product/category management, order fulfillment, and user management
+- Admin dashboard, product/category management, order fulfillment, order date/status filters, user management, and printable order reports
 - Server-side customer/admin authorization for protected API routes
-- GPT-powered customer service with per-account conversation history and order/product context
-- Login-time customer order/product updates and admin order/product activity summaries
+- Gemini-powered customer service with per-account conversation history and role-appropriate order/product context
+- Login-time AI summaries of customer order status and admin store activity, with database-based fallback notices
 
 ## Stack
 
@@ -33,7 +33,7 @@ A local-demo merchandise shop with customer browsing, carts, checkout, order his
 4. Open `client/` as the static web root and serve it at <http://127.0.0.1:5500> (for example, open that folder in VS Code before starting Live Server). Do not serve the repository root. The API origin and CORS origin are configured for these local addresses by default. If you change the client origin, update both `client/config.js` and `CLIENT_ORIGIN` in `infra/.env`.
 5. Register an account through the app. To create the first admin, use Adminer to set that account's `role_id` to `1` in the `users` table. The public registration endpoint always creates customer accounts.
 6. Sign in as the admin, create categories and products, then sign in as a customer to test browse → cart → checkout → history. Use `scripts/off.sh` to stop the local containers.
-7. To enable the AI assistant, add a Gemini API key to `GEMINI_API_KEY` in `infra/.env`, optionally set `GEMINI_MODEL` (defaults to `gemini-3.5-flash`), then recreate the server container with `cd infra && podman compose up -d --force-recreate server`. The key stays on the server and is never sent to the browser. Without a key, order/product update notices still work and the chat reports that AI service is not configured.
+7. To enable the AI assistant and AI-generated login greeting, add a Gemini API key to `GEMINI_API_KEY` in `infra/.env`, optionally set `GEMINI_MODEL` (defaults to `gemini-3.5-flash`), then recreate the server container with `cd infra && podman compose up -d --force-recreate server`. The key stays on the server and is never sent to the browser. If Gemini is unavailable, login falls back to the database-based order and product update notice.
 
 The database volume is stored under `database/` and persists between starts. Do not remove or replace it to reset the database unless you have backed up any data you want to keep.
 
