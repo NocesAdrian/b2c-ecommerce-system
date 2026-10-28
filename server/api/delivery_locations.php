@@ -1,7 +1,5 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
@@ -10,87 +8,63 @@ $service_path = $config["services_path"];
 
 require_once $service_path."delivery_locations.php";
 $delivery_locations = new DeliveryLocationRepository($db_path);
-require_once $service_path."auth.php";
-$auth = new Auth($config["db_path"]);
 require_once $service_path."sessions.php";
-$sessions = new SessionRepository($config["db_path"]);
+$sessions = new SessionRepository($db_path);
+require_once $service_path."authorization.php";
 
 switch ($requested_route) {
     case "/api/delivery_locations":
 
+        requireAdminUser($sessions);
         echo json_encode($delivery_locations->getAll());
 
         exit(0);
 
     case "/api/delivery_locations/create":
 
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
-
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
 
         $body = $delivery_locations->getJsonBody();
 
         $location = $delivery_locations->validateString($body["location"] ?? '');
-        $result = $delivery_locations->insert(["user_id", "location"], [$delivery_locations->validateID($author["user_id"], "users"), $location]);
+        $result = $delivery_locations->saveForUser(
+            (int) $author["user_id"],
+            $location
+        );
         
-        if ($result["affected_rows"] < 1) {
-            echo json_encode([
-                "error" => "Failed to Create Account"
-            ]);
-            exit(-1);
-        };
-        
-        http_response_code(201);
+        http_response_code(200);
         echo json_encode($result);
 
         exit(0);
 
     case "/api/delivery_locations/delete":
 
-        $body = $delivery_locations->getJsonBody();
-
-        $id = $body["id"] ?? '';
-        $id = $delivery_locations->validateID($id, "categories");
-
-        if (!$delivery_locations->exist($id)) {
-            echo json_encode([
-                "error" => "category dont exist"
-            ]);
-            exit(-1);
-        }
-        
-        echo json_encode($delivery_locations->delete($id));
+        $author = requireAuthenticatedUser($sessions);
+        echo json_encode($delivery_locations->deleteForUser((int) $author["user_id"]));
 
         exit(0);
 
     case "/api/delivery_locations/update":
 
+        $author = requireAuthenticatedUser($sessions);
         $body = $delivery_locations->getJsonBody();
+        $location = $delivery_locations->validateString($body["location"] ?? '');
 
-        $id = $body["id"] ?? '';
-        $name = $body["name"] ?? '';
+        if (mb_strlen($location) > 255) {
+            http_response_code(400);
+            echo json_encode(["error" => "Delivery location must be 255 characters or fewer"]);
+            exit(-1);
+        }
 
-        $id = $delivery_locations->validateID($id, "categories");
-        $name = $delivery_locations->validateString($name);
-
-        echo json_encode($delivery_locations->update(["name"], [$name], $id));
+        echo json_encode($delivery_locations->saveForUser((int) $author["user_id"], $location));
 
         exit(0);
 
     case "/api/delivery_locations/location":
 
-        $body = $delivery_locations->getJsonBody();
-
-        $id = $body["id"] ?? '';
-        $id = $delivery_locations->validateID($id, "categories");
-
-        echo json_encode($delivery_locations->get($id));
+        $author = requireAuthenticatedUser($sessions);
+        $location = $delivery_locations->getForUser((int) $author["user_id"]);
+        echo json_encode($location ?? []);
 
         exit(0);
 

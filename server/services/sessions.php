@@ -24,7 +24,8 @@ class SessionRepository extends BaseRepository
             SELECT
                 u.id AS user_id,
                 u.role_id,
-                u.username
+                u.username,
+                TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP, s.expire_at) AS expires_in
             FROM sessions AS s
             JOIN users AS u ON u.id = s.user_id
             WHERE s.token_hash = :token_hash

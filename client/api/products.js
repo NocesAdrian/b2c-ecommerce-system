@@ -103,6 +103,7 @@ function build_card(product) {
     const image = clone.querySelector(".product-card-photo");
     const title = clone.querySelector(".product-card-title");
     const price = clone.querySelector(".product-card-price");
+    const stock = clone.querySelector(".product-card-stock");
 
     fit_to_image(image, box);
 
@@ -121,6 +122,10 @@ function build_card(product) {
             maximumFractionDigits: 2
         }
     )}`;
+    stock.textContent = Number(product.stocks) > 0
+        ? `${product.stocks} in stock`
+        : "Out of stock";
+    stock.classList.toggle("is-out", Number(product.stocks) <= 0);
 
     // Optional: pass product ID to the product page
     card.href = `view-product.html?id=${encodeURIComponent(product.id)}`;

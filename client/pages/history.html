@@ -11,6 +11,7 @@
   <link href="../css/navbar.css" rel="stylesheet">
   <link href="../css/history.css" rel="stylesheet">
   <link rel="stylesheet" href="../css/view-product.css">
+  <link rel="stylesheet" href="../css/app-polish.css">
 </head>
 
 <body>
@@ -20,12 +21,26 @@
     <div class="container">
       <div class="app-nav-row">
 
-        <h1 class="page-title">History</h1>
+        <a class="app-brand" href="../index.html" aria-label="Despera Merchandise home">
+          <img src="../resource/logo.svg" alt="Despera Merchandise">
+          <h1 class="visually-hidden">History</h1>
+        </a>
 
-        <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
-          aria-controls="sideMenu" aria-label="Open menu">
-          <i class="bi bi-list"></i>
-        </button>
+        <div class="nav-actions">
+          <a class="menu-btn" href="customer.html" aria-label="Browse" title="Browse">
+            <i class="bi bi-shop"></i>
+          </a>
+          <a class="menu-btn" href="carts.html" aria-label="Carts" title="Carts">
+            <i class="bi bi-cart3"></i>
+          </a>
+          <a class="menu-btn" href="history.html" aria-label="History" title="History" aria-current="page">
+            <i class="bi bi-clock-history"></i>
+          </a>
+          <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+            aria-controls="sideMenu" aria-label="Open menu">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
 
       </div>
     </div>
@@ -46,24 +61,31 @@
     <div class="offcanvas-body side-body">
 
       <!-- username | role -->
-      <div class="user-card">
+      <a class="user-card user-card-link" href="profile.html" aria-label="Edit your profile">
         <div class="avatar"><i class="bi bi-person"></i></div>
         <div class="user-info">
           <div class="user-name" id="username-display">username</div>
           <span class="role-pill">Customer</span>
         </div>
-      </div>
+        <i class="bi bi-chevron-right profile-chevron" aria-hidden="true"></i>
+      </a>
 
       <!-- navigation -->
       <nav class="side-nav" aria-label="Main navigation">
         <a href="customer.html" class="side-link">
-          <i class="bi bi-grid"></i><span>Browse</span>
+          <i class="bi bi-shop"></i><span>Browse</span>
         </a>
         <a href="carts.html" class="side-link">
-          <i class="bi bi-bag"></i><span>Carts</span>
+          <i class="bi bi-cart3"></i><span>Carts</span>
         </a>
         <a href="history.html" class="side-link active" aria-current="page">
           <i class="bi bi-clock-history"></i><span>History</span>
+        </a>
+        <a href="customer-service.html" class="side-link">
+          <i class="bi bi-chat-dots"></i><span>AI Customer Service</span>
+        </a>
+        <a href="about.html" class="side-link">
+          <i class="bi bi-question-circle"></i><span>About This Page</span>
         </a>
       </nav>
 
@@ -77,10 +99,6 @@
 
   <!-- ORDER HISTORY -->
   <main class="container history-page">
-
-    <a href="customer.html" class="back-link">
-      <i class="bi bi-arrow-left"></i> Back to browse
-    </a>
 
     <div class="mb-4">
       <p class="eyebrow mb-2">Your orders</p>
@@ -185,11 +203,10 @@
           <div id="view-pay" class="d-none">
             <div class="modal-icon"><i class="bi bi-qr-code-scan"></i></div>
             <h2 class="modal-heading">Pay with GCash</h2>
-            <p class="modal-sub">Scan the QR code with your GCash app, then tap "I've paid".</p>
+            <p class="modal-sub">Demo only: no payment is processed. Tap "I've paid" to simulate payment.</p>
 
-            <!-- Put your GCash QR image at ../images/gcash-qr.png (or change the src) -->
             <div class="gcash-qr" id="gcash-qr">
-              <img src="../images/gcash-qr.png" alt="GCash QR code">
+              <img src="../images/gcash-qr.png" alt="GCash payment QR code">
             </div>
 
             <div class="modal-amount">
@@ -235,6 +252,17 @@
       </div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a class="site-footer-brand" href="../index.html">Despera Merchandise</a>
+      <p>A fan-made demo store for school purposes. Nothing here is official.</p>
+      <nav aria-label="Footer navigation">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About this project</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>

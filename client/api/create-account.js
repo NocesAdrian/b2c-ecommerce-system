@@ -9,7 +9,10 @@ const api_endpoint = {
 };
 
 function showAccountError(message) {
-    document.getElementById("account-error").textContent = message;
+    const error = document.getElementById("account-error");
+
+    error.textContent = message;
+    error.classList.toggle("d-none", !message);
 }
 
 async function create_cart(api_endpoint) {
@@ -24,7 +27,7 @@ async function create_cart(api_endpoint) {
 
         const body = await response.json().catch(() => ({}));
 
-        if (response.status === 201) {
+        if (response.ok) {
             await create_delivery_location(api_endpoint);
         } else {
             showAccountError(body.error || "Failed to create cart.");
@@ -51,7 +54,7 @@ async function create_delivery_location(api_endpoint) {
 
         const body = await response.json().catch(() => ({}));
 
-        if (response.status === 201) {
+        if (response.ok) {
             window.location.href = "customer.html";
         } else {
             showAccountError(body.error || "Failed to save delivery location.");
@@ -92,7 +95,7 @@ async function create_account(api_endpoint) {
 
     showAccountError("");
 
-    if (!username || !password) {
+    if (!username || username.length > 255 || !password) {
         showAccountError("Please enter a username and password.");
         return;
     }
@@ -134,5 +137,12 @@ const form = document.getElementById("create-account-form");
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
-    create_account(api_endpoint);
+    const button = form.querySelector("button[type=submit]");
+
+    button.disabled = true;
+    form.setAttribute("aria-busy", "true");
+    create_account(api_endpoint).finally(() => {
+        button.disabled = false;
+        form.removeAttribute("aria-busy");
+    });
 });

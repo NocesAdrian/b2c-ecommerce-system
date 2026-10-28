@@ -101,13 +101,16 @@ async function post_order_action(endpoint, order_id) {
         body: JSON.stringify({ order_id })
     });
 
+    const body = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-        const error = new Error(`Order action failed: ${response.status}`);
+        const error = new Error(body.error || `Order action failed: ${response.status}`);
         error.status = response.status;
+        error.details = body;
         throw error;
     }
 
-    return await response.json();
+    return body;
 }
 
 /* ---------------- List ---------------- */
@@ -331,7 +334,9 @@ async function run_order_action(endpoint, button, error_element, on_success) {
         buttons.forEach(b => { b.disabled = false; });
 
         if (error.status === 404 || error.status === 409) {
-            error_element.textContent = "This order can't be changed anymore.";
+            error_element.textContent = endpoint === api_endpoint.orders_pay && error.details?.product_id
+                ? "There isn't enough stock to pay for this order now. Cancel it and place a new order with available items."
+                : error.message || "This order can't be changed anymore.";
             await refresh_orders();
         } else {
             error_element.textContent = "Something went wrong. Please try again.";

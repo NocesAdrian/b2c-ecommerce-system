@@ -15,7 +15,6 @@ async function auth(api_endpoint) {
     const body = await response.json();
 
     if (response.ok && body.authenticated) {
-        console.log(body.user);
         if (body.user.role_id > 1) {
             window.location.href = "customer.html";
             return;
@@ -24,11 +23,8 @@ async function auth(api_endpoint) {
         window.location.href = "admin.html";
         return;
     }
-    console.log("Not authenticated");
-
 }
 
 window.addEventListener("load", () => {
-    console.log("Page fully loaded!");
     auth(api_endpoint);
 });

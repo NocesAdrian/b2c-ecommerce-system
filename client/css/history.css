@@ -145,13 +145,24 @@
 
 .modal-note { color: var(--muted); font-size: .92rem; margin-bottom: .25rem; }
 
+.order-modal #view-pay .modal-sub { margin-bottom: .65rem; }
+.order-modal #view-pay .gcash-qr {
+  width: min(100%, 15rem);
+  padding: .4rem;
+  margin-bottom: .7rem;
+}
+.order-modal #view-pay .modal-amount {
+  padding: .65rem .9rem;
+  margin-bottom: .75rem;
+}
+
 .gcash-qr {
   background: var(--primary);
-  border-radius: 1.25rem;
-  padding: 1rem;
-  width: min(100%, 16rem);
+  border-radius: 1rem;
+  padding: .5rem;
+  width: 100%;
   aspect-ratio: 1 / 1;
-  margin: 0 auto 1.1rem;
+  margin: 0 auto .75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,7 +170,7 @@
 .gcash-qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gcash-qr.is-missing img { display: none; }
 .gcash-qr.is-missing::after {
-  content: "Add your GCash QR image at images/gcash-qr.png";
+  content: "Demo payment — no QR code configured";
   color: var(--muted);
   font-size: .85rem;
 }

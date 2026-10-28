@@ -43,6 +43,7 @@ export function initQuantityController() {
     }
 
     qty.max = stock;
+    addBtn.disabled = false;
     setQty(qty.value);
 
     minus.addEventListener("click", () => setQty(Number(qty.value) - 1));
@@ -52,21 +53,4 @@ export function initQuantityController() {
     });
     qty.addEventListener("blur", () => setQty(qty.value));
 
-    let timer;
-
-    addBtn.addEventListener("click", () => {
-        const n = Number(qty.value);
-
-        addBtn.classList.add("added");
-        addBtn.innerHTML =
-            `<i class="bi bi-check2 me-2"></i><span>${n}${n > 1 ? " items" : " item"} added to cart</span>`;
-
-        clearTimeout(timer);
-
-        timer = setTimeout(() => {
-            addBtn.classList.remove("added");
-            addBtn.innerHTML =
-                '<i class="bi bi-bag-plus me-2"></i><span>Add to cart</span>';
-        }, 1800);
-    });
 }

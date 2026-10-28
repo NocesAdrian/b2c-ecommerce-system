@@ -1,7 +1,5 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
@@ -11,25 +9,21 @@ $storage_path = $config["storage_path"];
 
 require_once $service_path."orders.php";
 $orders = new OrderRepository($db_path);
+require_once $service_path."sessions.php";
+$sessions = new SessionRepository($db_path);
 require_once $service_path."order_items.php";
 $orders_items = new OrderItemRepository($db_path);
+require_once $service_path."cart_items.php";
+$cartItems = new CartItemRepository($db_path);
 require_once $service_path."products.php";
 $products = new ProductRepository($db_path, $storage_path);
+require_once $service_path."users.php";
+$users = new UserRepository($db_path);
+require_once $service_path."authorization.php";
 
 switch ($requested_route) {
     case "/api/orders":
- 
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
- 
-        // TODO: admin only (role_id = 1), return 403 otherwise.
+        requireAdminUser($sessions);
  
         echo json_encode($orders->getAllDetailed());
  
@@ -37,15 +31,7 @@ switch ($requested_route) {
 
     case "/api/orders/user":
 
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
-
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
 
         $user_id = $orders->validateID($author["user_id"], "users");
 
@@ -61,15 +47,7 @@ switch ($requested_route) {
  
         $body = $orders->getJsonBody();
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
  
         $user_id = $orders->validateID($author["user_id"], "users");
  
@@ -114,18 +92,7 @@ switch ($requested_route) {
 
         $body = $orders->getJsonBody();
 
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
-
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
-
-        // TODO: only admins should reach this point (role_id = 1).
-        // Add your admin check here, and return 403 if it fails.
+        requireAdminUser($sessions);
 
         $id = $body["id"] ?? '';
         $status = $body["status"] ?? '';
@@ -136,6 +103,52 @@ switch ($requested_route) {
         if (!in_array($status, ["pending", "paid", "delivered", "cancelled"], true)) {
             http_response_code(400);
             echo json_encode(["error" => "Invalid order status"]);
+            exit(-1);
+        }
+
+        if ($status === "paid") {
+            $payment_result = $orders->markPaid($id);
+
+            if ($payment_result["status"] === "not_found") {
+                http_response_code(404);
+                echo json_encode(["error" => "Order not found"]);
+                exit(-1);
+            }
+
+            if ($payment_result["status"] !== "paid") {
+                http_response_code(409);
+                echo json_encode([
+                    "error" => $payment_result["status"] === "out_of_stock"
+                        ? "Insufficient stock to pay for this order"
+                        : "Order can no longer be paid",
+                    "product_id" => $payment_result["product_id"] ?? null
+                ]);
+                exit(-1);
+            }
+
+            http_response_code(200);
+            echo json_encode(["status" => "paid"]);
+            exit(0);
+        }
+
+        $current_order = $orders->getOrderStatus($id);
+
+        if ($current_order === false) {
+            http_response_code(404);
+            echo json_encode(["error" => "Order not found"]);
+            exit(-1);
+        }
+
+        $allowed_transition = match ($status) {
+            "delivered" => $current_order["status"] === "paid",
+            "cancelled" => $current_order["status"] === "pending",
+            "pending" => false,
+            default => true
+        };
+
+        if (!$allowed_transition) {
+            http_response_code(409);
+            echo json_encode(["error" => "Invalid order status transition"]);
             exit(-1);
         }
 
@@ -153,15 +166,7 @@ switch ($requested_route) {
  
         $body = $orders->getJsonBody();
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
  
         $user_id = $orders->validateID($author["user_id"], "users");
         $order_id = $orders->validateID($body["order_id"] ?? '', "orders");
@@ -198,35 +203,33 @@ switch ($requested_route) {
  
         $body = $orders->getJsonBody();
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
  
         $user_id = $orders->validateID($author["user_id"], "users");
         $order_id = $orders->validateID($body["order_id"] ?? '', "orders");
  
-        $order = $orders->getOwned($order_id, $user_id);
- 
-        if ($order === false) {
+        $payment_result = $orders->markPaid($order_id, $user_id);
+
+        if ($payment_result["status"] === "not_found") {
             http_response_code(404);
             echo json_encode(["error" => "Order not found"]);
             exit(-1);
         }
  
-        // Only a pending order can be paid
-        if ($order["status"] !== "pending") {
+        if ($payment_result["status"] === "out_of_stock") {
+            http_response_code(409);
+            echo json_encode([
+                "error" => "Insufficient stock to pay for this order",
+                "product_id" => $payment_result["product_id"]
+            ]);
+            exit(-1);
+        }
+
+        if ($payment_result["status"] !== "paid") {
             http_response_code(409);
             echo json_encode(["error" => "Order can no longer be paid"]);
             exit(-1);
         }
- 
-        $orders->update(["status"], ["paid"], $order_id);
  
         http_response_code(200);
  
@@ -239,25 +242,14 @@ switch ($requested_route) {
 
     case "/api/dashboard/stats":
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
- 
-        // TODO: only admins (role_id = 1) should see these numbers.
-        // Add your admin check here and return 403 if it fails.
+        requireAdminUser($sessions);
  
         http_response_code(200);
  
         echo json_encode([
-            "total_products" => $products->countAll()["total_products"],
-            "total_orders" => $orders->countAll()["total_orders"],
-            "total_revenue" => $orders->totalRevenue()["total_revenue"]
+            ...$orders->getDashboardSales(),
+            ...$products->getInventoryOverview(),
+            "total_customers" => $users->countCustomers()
         ]);
  
         exit(0);
@@ -266,17 +258,7 @@ switch ($requested_route) {
  
         $body = $orders->getJsonBody();
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
- 
-        // TODO: admin only (role_id = 1), return 403 otherwise.
+        requireAdminUser($sessions);
  
         $order_id = (int)($body["order_id"] ?? 0);
  
@@ -294,17 +276,7 @@ switch ($requested_route) {
  
         $body = $orders->getJsonBody();
  
-        $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-        $author = $sessions->getByToken($token_hash);
- 
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
- 
-        // TODO: admin only (role_id = 1), return 403 otherwise.
+        requireAdminUser($sessions);
  
         $order_id = $orders->validateID($body["order_id"] ?? '', "orders");
  

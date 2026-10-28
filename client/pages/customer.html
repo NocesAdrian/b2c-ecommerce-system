@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="../css/browse.css">
   <!-- Category chips, loading skeleton and tighter category spacing. Keep LAST. -->
   <link rel="stylesheet" href="../css/browse-art.css">
+  <link rel="stylesheet" href="../css/app-polish.css">
 </head>
 
 <body>
@@ -23,17 +24,23 @@
     <div class="container">
       <div class="app-nav-row">
 
-        <h1 class="page-title">Browse</h1>
+        <a class="app-brand" href="../index.html" aria-label="Despera Merchandise home">
+          <img src="../resource/logo.svg" alt="Despera Merchandise">
+          <h1 class="visually-hidden">Browse</h1>
+        </a>
 
         <form class="nav-search" role="search" data-ui-only>
           <i class="bi bi-search"></i>
           <input type="search" class="form-control" id="product-search" placeholder="Search merchandise or category" aria-label="Search merchandise or category">
         </form>
 
-        <!-- Quick links (Browse page only): Carts | History | menu -->
+        <!-- Customer shortcuts -->
         <div class="nav-actions">
+          <a class="menu-btn" href="customer.html" aria-label="Browse" title="Browse" aria-current="page">
+            <i class="bi bi-shop"></i>
+          </a>
           <a class="menu-btn" href="carts.html" aria-label="Carts" title="Carts">
-            <i class="bi bi-bag"></i>
+            <i class="bi bi-cart3"></i>
           </a>
           <a class="menu-btn" href="history.html" aria-label="History" title="History">
             <i class="bi bi-clock-history"></i>
@@ -63,24 +70,31 @@
     <div class="offcanvas-body side-body">
 
       <!-- username | role -->
-      <div class="user-card">
+      <a class="user-card user-card-link" href="profile.html" aria-label="Edit your profile">
         <div class="avatar"><i class="bi bi-person"></i></div>
         <div class="user-info">
           <div class="user-name" id="username-display">username</div>
           <span class="role-pill">Customer</span>
         </div>
-      </div>
+        <i class="bi bi-chevron-right profile-chevron" aria-hidden="true"></i>
+      </a>
 
       <!-- navigation -->
       <nav class="side-nav" aria-label="Main navigation">
         <a href="customer.html" class="side-link active" aria-current="page">
-          <i class="bi bi-grid"></i><span>Browse</span>
+          <i class="bi bi-shop"></i><span>Browse</span>
         </a>
         <a href="carts.html" class="side-link">
-          <i class="bi bi-bag"></i><span>Carts</span>
+          <i class="bi bi-cart3"></i><span>Carts</span>
         </a>
         <a href="history.html" class="side-link">
           <i class="bi bi-clock-history"></i><span>History</span>
+        </a>
+        <a href="customer-service.html" class="side-link">
+          <i class="bi bi-chat-dots"></i><span>AI Customer Service</span>
+        </a>
+        <a href="about.html" class="side-link">
+          <i class="bi bi-question-circle"></i><span>About This Page</span>
         </a>
       </nav>
 
@@ -157,10 +171,22 @@
         <div class="product-card-body">
           <h3 class="product-card-title">Product title</h3>
           <p class="product-card-price">₱0</p>
+          <p class="product-card-stock"></p>
         </div>
       </a>
     </div>
   </template>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a class="site-footer-brand" href="../index.html">Despera Merchandise</a>
+      <p>A fan-made demo store for school purposes. Nothing here is official.</p>
+      <nav aria-label="Footer navigation">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About this project</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>

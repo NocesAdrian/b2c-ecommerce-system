@@ -2,6 +2,6 @@
 
 set -e
 
-cd infra
-cp .env.example .env
-./scripts/on.sh
+cd "$(dirname "$0")/.."
+cp -n infra/.env.example infra/.env
+scripts/on.sh

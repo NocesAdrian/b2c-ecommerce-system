@@ -1,0 +1,136 @@
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  border-bottom: 1px solid rgba(51, 44, 37, .06);
+  background: rgba(246, 245, 244, .92);
+  backdrop-filter: blur(16px);
+}
+.landing-nav-inner {
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.landing-brand { display: inline-flex; align-items: center; min-width: 0; }
+.landing-brand img { display: block; width: min(12rem, 42vw); height: auto; }
+.landing-nav-links { display: flex; align-items: center; gap: .5rem; }
+.landing-nav-how {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .9rem;
+  margin-right: .4rem;
+}
+.landing-nav-how:hover, .landing-existing-link:hover { color: var(--text); }
+.landing-nav .btn { padding: .6rem 1rem; font-size: .88rem; }
+
+.hero { position: relative; overflow: hidden; padding: 2rem 0 3rem; }
+.hero::before {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  width: 30rem;
+  height: 30rem;
+  top: 1rem;
+  right: -17rem;
+  border: 1px solid rgba(128, 106, 79, .12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rem rgba(128, 106, 79, .025), 0 0 0 6rem rgba(128, 106, 79, .02);
+}
+.landing-kicker {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--accent);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.landing-kicker span { width: .45rem; height: .45rem; border-radius: 50%; background: var(--accent); }
+.landing-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.25rem; }
+.landing-hero-actions .btn { min-height: 3rem; }
+.landing-existing-link { color: var(--muted); font-size: .88rem; text-decoration: none; }
+.landing-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem 1.25rem;
+  margin-top: 1.6rem;
+  color: var(--muted);
+  font-size: .82rem;
+}
+.landing-proof span { display: inline-flex; align-items: center; gap: .4rem; }
+.landing-proof i { color: var(--accent); }
+.landing-hero-art {
+  position: relative;
+  width: min(100%, 29rem);
+  margin: 0 auto;
+  padding: .65rem;
+  border: 1px solid rgba(128, 106, 79, .13);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, .66);
+  box-shadow: 0 2rem 4rem rgba(51, 44, 37, .12);
+  transform: rotate(1.5deg);
+}
+.landing-hero-art .hero-visual {
+  width: 100%;
+  height: clamp(20rem, 75vw, 33rem);
+  max-width: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  border-radius: 1.45rem;
+}
+.landing-art-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .75rem .45rem .25rem;
+  color: var(--muted);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.landing-art-mark {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--accent);
+  font-size: .86rem;
+  font-weight: 700;
+}
+.steps { padding-top: 2rem; }
+.steps .text-center { max-width: 48rem; margin-right: auto; margin-left: auto; }
+.steps .step { border: 1px solid rgba(51, 44, 37, .05); border-radius: 1.5rem; }
+.steps .step small { font-size: .7rem; font-weight: 700; }
+.cta-card { border: 1px solid rgba(51, 44, 37, .05); }
+footer { padding-top: 1rem; }
+
+@media (max-width: 575.98px) {
+  .landing-nav-inner { min-height: 4rem; }
+  .landing-nav-how { display: none; }
+  .landing-nav-links { gap: .35rem; }
+  .landing-nav .btn { padding: .55rem .75rem; font-size: .8rem; }
+  .hero { padding-top: 2.25rem; }
+  .landing-hero-actions { align-items: flex-start; flex-direction: column; gap: .85rem; }
+  .landing-hero-art { width: min(88%, 25rem); }
+}
+
+@media (min-width: 992px) {
+  .landing-nav-inner { min-height: 5rem; }
+  .hero { padding-top: 2.5rem; padding-bottom: 3.5rem; }
+  .landing-hero-art { margin-right: 0; }
+  .landing-hero-art .hero-visual { height: min(65vh, 37rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-art { transform: none; }
+}

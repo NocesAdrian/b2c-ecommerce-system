@@ -12,10 +12,8 @@ async function deleteExpiredSessions() {
 
         const body = await response.json();
 
-        if (response.ok) {
-            console.log("Expired sessions deleted:", body.affected_rows);
-        } else {
-            console.error("Failed to delete expired sessions");
+        if (!response.ok) {
+            console.error(body.error || "Failed to delete expired sessions");
         }
     } catch (error) {
         console.error("Request failed:", error);

@@ -33,6 +33,17 @@ class UserRepository extends BaseRepository
 
         return (int)$record["count"] > 0;
     }
+
+    public function countCustomers(): int
+    {
+        $stmt = $this->db->query("
+            SELECT COUNT(*)
+            FROM users
+            WHERE role_id = 2;
+        ");
+
+        return (int) $stmt->fetchColumn();
+    }
    
     public function validatePassword(mixed $password): string
     {

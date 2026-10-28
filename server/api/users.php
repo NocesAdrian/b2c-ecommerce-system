@@ -1,7 +1,5 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
@@ -9,44 +7,17 @@ $requested_route = $config["requested_route"];
 $service_path = $config["services_path"];
 
 require_once $service_path."users.php";
-require_once $service_path."auth.php";
 $users = new UserRepository($db_path);
-$auth = new Auth($db_path);
 
 require_once $service_path."sessions.php";
 $sessions = new SessionRepository($config["db_path"]);
-
-
-// ADDED: stops the request unless the person is logged in AND an admin (role_id = 1).
-// Returns the session row ($author) so the route can use $author["user_id"].
-function requireAdmin($sessions, $users) : array
-{
-    $token_hash = hash("sha256", $sessions->validateToken($_COOKIE["token"] ?? ''));
-    $author = $sessions->getByToken($token_hash);
-
-    if ($author === false) {
-        $sessions->deleteByToken($token_hash);
-        http_response_code(401);
-        echo json_encode(["error" => "Session expired or invalid"]);
-        exit(-1);
-    }
-
-    $me = $users->get((int)$author["user_id"]);
-
-    if (!$me || (int)($me["role_id"] ?? 0) !== 1) {
-        http_response_code(403);
-        echo json_encode(["error" => "Admins only"]);
-        exit(-1);
-    }
-
-    return $author;
-}
+require_once $service_path."authorization.php";
 
 
 switch ($requested_route) {
     case "/api/users":
 
-        requireAdmin($sessions, $users);
+        requireAdminUser($sessions);
 
         echo json_encode($users->getSelected(["id", "role_id", "username", "date_updated", "date_created"]));
 
@@ -88,11 +59,62 @@ switch ($requested_route) {
 
         exit(0);
 
+    case "/api/users/profile/update":
+
+        $author = requireAuthenticatedUser($sessions);
+        $body = $users->getJsonBody();
+        $user_id = (int) $author["user_id"];
+        $current = $users->get($user_id);
+        $username = $users->validateString($body["username"] ?? $current["username"]);
+
+        if (mb_strlen($username) < 4 || mb_strlen($username) > 255) {
+            http_response_code(400);
+            echo json_encode(["error" => "Username must contain between 4 and 255 characters"]);
+            exit(-1);
+        }
+
+        if ($username !== $current["username"] && $users->usernameExist($username)) {
+            http_response_code(409);
+            echo json_encode(["error" => "User exist"]);
+            exit(-1);
+        }
+
+        $fields = ["username"];
+        $values = [$username];
+        $new_password = $body["new_password"] ?? "";
+
+        if ($new_password !== "") {
+            $current_password = $users->validatePassword($body["current_password"] ?? null);
+
+            if (!password_verify($current_password, $current["password_hash"])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Current password is incorrect"]);
+                exit(-1);
+            }
+
+            $new_password = $users->validatePassword($new_password);
+
+            if (strlen($new_password) < 4) {
+                http_response_code(400);
+                echo json_encode(["error" => "New password must contain at least 4 characters"]);
+                exit(-1);
+            }
+
+            $fields[] = "password_hash";
+            $values[] = password_hash($new_password, PASSWORD_DEFAULT);
+        }
+
+        $users->update($fields, $values, $user_id);
+        http_response_code(200);
+        echo json_encode(["username" => $username]);
+
+        exit(0);
+
     // ADDED: admin only. Change username, role and (optionally) password.
     // Body: { "id": 5, "username": "ana", "role_id": 2, "password": "optional" }
     case "/api/users/update":
 
-        $author = requireAdmin($sessions, $users);
+        $author = requireAdminUser($sessions);
         $body = $users->getJsonBody();
 
         $id = $users->validateID($body["id"] ?? '', "users");
@@ -139,7 +161,7 @@ switch ($requested_route) {
 
     case "/api/users/delete":
 
-        $author = requireAdmin($sessions, $users);
+        $author = requireAdminUser($sessions);
         $body = $users->getJsonBody();
 
         $id = $body["id"] ?? '';
@@ -157,14 +179,14 @@ switch ($requested_route) {
 
     case "/api/users/customers":
 
-        requireAdmin($sessions, $users);
+        requireAdminUser($sessions);
 
         echo json_encode($users->getCondition(["id", "role_id","username", "date_updated", "date_created"], ["role_id", 2, "="]));
         exit(0);
 
     case "/api/users/admin":
 
-        requireAdmin($sessions, $users);
+        requireAdminUser($sessions);
 
         echo json_encode($users->getCondition(["id", "role_id","username", "date_updated", "date_created"], ["role_id", 1, "="]));
         exit(0);

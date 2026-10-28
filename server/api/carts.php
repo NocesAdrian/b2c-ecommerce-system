@@ -1,24 +1,23 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
 $requested_route = $config["requested_route"];
 $service_path = $config["services_path"];
 
+require_once $service_path."sessions.php";
+$sessions = new SessionRepository($db_path);
+require_once $service_path."authorization.php";
 require_once $service_path."carts.php";
 $carts = new CartRepository($db_path);
-require_once $service_path."auth.php";
-$auth = new Auth($config["db_path"]);
-require_once $service_path."sessions.php";
-$sessions = new SessionRepository($config["db_path"]);
 require_once $service_path."cart_items.php";
 $cartItems = new CartItemRepository($config["db_path"]);
 
 switch ($requested_route) {
     case "/api/carts":
+
+        requireAdminUser($sessions);
 
         echo json_encode($carts->getAll());
 
@@ -26,33 +25,15 @@ switch ($requested_route) {
 
     case "/api/carts/create":
         
-        $token = $_COOKIE["token"] ?? '';
-        $token = $sessions->validateToken($token);
-
-        $token_hash = hash("sha256", $token);
-        
-        $author = $sessions->getByToken($token_hash);
-
-        if ($author === false) {
-            $sessions->deleteByToken($token_hash);
-            http_response_code(401);
-            echo json_encode(["error" => "Session expired or invalid"]);
-            exit(-1);
-        }
+        $author = requireAuthenticatedUser($sessions);
 
         $user_id = $author["user_id"];
         $user_id = $carts->validateID($user_id, "users");
 
-        $result = $carts->insert(["user_id"], [$user_id]);
+        $result = $carts->ensureForUser($user_id);
 
-        if ($result["affected_rows"] < 1) {
-            http_response_code(500);
-            exit(-1);
-        };
-
-        http_response_code(201);
+        http_response_code(200);
         echo json_encode($result);
-
         exit(0);
 /*
     case "/api/carts/delete":
@@ -214,32 +195,28 @@ switch ($requested_route) {
             exit;
         }
 
-        $existing_item = $cartItems->getItem(
+        $result = $cartItems->addWithinStock(
             (int) $cart[0]["id"],
-            $product_id
+            $product_id,
+            $quantity
         );
 
-        if ($existing_item !== false) {
+        if ($result["status"] === "product_not_found") {
+            http_response_code(404);
+            echo json_encode(["error" => "Product not found"]);
+            exit(-1);
+        }
 
-            http_response_code(200);
-            $new_quantity = (int) $existing_item["quantity"] + $quantity;
-            
-            $cartItems->updateQuantity(
-                (int) $cart[0]["id"],
-                $product_id,
-                $new_quantity
-            );
+        if ($result["status"] === "insufficient_stock") {
+            http_response_code(409);
+            echo json_encode([
+                "error" => "Only ".$result["available"]." more item(s) are available",
+                "available" => $result["available"]
+            ]);
+            exit(-1);
+        }
 
-            echo json_encode(["message" => "Cart updated successfully"]);   
-            exit(0);
-        } 
-        
-        $cartItems->insert(
-            ["cart_id", "product_id", "quantity"],
-            [$cart[0]["id"], $product_id, $quantity]
-        );
-
-        http_response_code(201);
+        http_response_code(200);
         echo json_encode(["message" => "Cart updated successfully"]);
         exit;
 
@@ -292,6 +269,71 @@ switch ($requested_route) {
         );
 
         exit;
+
+    case "/api/carts/items/update":
+        $token = $_COOKIE["token"] ?? "";
+        $token_hash = is_string($token) ? hash("sha256", $token) : "";
+        $author = $sessions->getByToken($token_hash);
+
+        if ($author === false) {
+            http_response_code(401);
+            echo json_encode(["error" => "Session expired or invalid"]);
+            exit(-1);
+        }
+
+        $cart = $carts->getCondition(
+            ["id"],
+            ["user_id", (int) $author["user_id"], "="]
+        );
+
+        if (!$cart) {
+            http_response_code(404);
+            echo json_encode(["error" => "Cart not found"]);
+            exit(-1);
+        }
+
+        $body = $cartItems->getJsonBody();
+        $product_id = $cartItems->validateID(
+            $body["product_id"] ?? "",
+            "products"
+        );
+        $quantity = $body["quantity"] ?? null;
+
+        if (!is_int($quantity) || $quantity < 1) {
+            http_response_code(400);
+            echo json_encode(["error" => "Quantity must be a positive integer"]);
+            exit(-1);
+        }
+
+        $result = $cartItems->setQuantityWithinStock(
+            (int) $cart[0]["id"],
+            $product_id,
+            $quantity
+        );
+
+        if ($result["status"] === "product_not_found") {
+            http_response_code(404);
+            echo json_encode(["error" => "Product not found"]);
+            exit(-1);
+        }
+
+        if ($result["status"] === "item_not_found") {
+            http_response_code(404);
+            echo json_encode(["error" => "Cart item not found"]);
+            exit(-1);
+        }
+
+        if ($result["status"] === "insufficient_stock") {
+            http_response_code(409);
+            echo json_encode([
+                "error" => "Only ".$result["available"]." item(s) are available",
+                "available" => $result["available"]
+            ]);
+            exit(-1);
+        }
+
+        echo json_encode(["message" => "Cart quantity updated"]);
+        exit(0);
 
     default:
         break;

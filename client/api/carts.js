@@ -4,7 +4,8 @@ const config = get_config();
 
 const api_endpoint = {
     cart_items: `${config.api_src}/api/carts/items/user`,
-    delete_item: `${config.api_src}/api/carts/items/delete`
+    delete_item: `${config.api_src}/api/carts/items/delete`,
+    update_item: `${config.api_src}/api/carts/items/update`
 };
 
 function format_peso(amount) {
@@ -50,6 +51,29 @@ async function delete_cart_item(product_id) {
     // 404 = the item (or cart) is already gone, so there is nothing left to delete
     if (!response.ok && response.status !== 404) {
         throw new Error("Failed to delete cart item");
+    }
+}
+
+async function update_cart_item(product_id, quantity) {
+    const response = await fetch(api_endpoint.update_item, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ product_id, quantity })
+    });
+
+    const body = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+        const error = new Error("Session expired or invalid");
+        error.status = 401;
+        throw error;
+    }
+
+    if (!response.ok) {
+        const error = new Error(body.error || "Failed to update item quantity");
+        error.status = response.status;
+        throw error;
     }
 }
 
@@ -146,6 +170,7 @@ function render_cart(data) {
     container.innerHTML = "";
 
     let total_quantity = 0;
+    let has_stock_issue = false;
 
     items.forEach(item => {
         const clone = template.content.cloneNode(true);
@@ -155,6 +180,9 @@ function render_cart(data) {
         const unit = clone.querySelector(".cart-unit");
         const quantity = clone.querySelector(".cart-qty-value");
         const line_total = clone.querySelector(".cart-line-total");
+        const stock_note = clone.querySelector(".cart-stock-note");
+        const stock = Number(item.product_stocks);
+        const quantity_value = Number(item.product_quantity);
 
         // Image path is relative to the API origin
         if (item.image_path) {
@@ -166,8 +194,17 @@ function render_cart(data) {
 
         name.textContent = item.product_name;
         unit.textContent = `${format_peso(item.product_price)} each`;
-        quantity.textContent = `× ${item.product_quantity}`;
-        line_total.textContent = format_peso(Number(item.product_price) * Number(item.product_quantity));
+        quantity.textContent = quantity_value;
+        line_total.textContent = format_peso(Number(item.product_price) * quantity_value);
+        const stock_issue = quantity_value > stock;
+
+        if (stock_issue) {
+            has_stock_issue = true;
+            stock_note.textContent = stock > 0
+                ? `Only ${stock} available. Reduce the quantity to continue.`
+                : "Out of stock. Remove this item to continue.";
+            stock_note.classList.remove("d-none");
+        }
 
         const remove_button = clone.querySelector(".cart-remove");
         const error_text = clone.querySelector(".cart-error");
@@ -177,7 +214,19 @@ function render_cart(data) {
             remove_item(item.product_id, remove_button, error_text);
         });
 
-        total_quantity += Number(item.product_quantity);
+        const minus_button = clone.querySelector(".cart-qty-minus");
+        const plus_button = clone.querySelector(".cart-qty-plus");
+
+        minus_button.disabled = quantity_value <= 1;
+        plus_button.disabled = quantity_value >= stock;
+        minus_button.addEventListener("click", () => {
+            change_quantity(item, quantity_value - 1, minus_button, stock_note);
+        });
+        plus_button.addEventListener("click", () => {
+            change_quantity(item, quantity_value + 1, plus_button, stock_note);
+        });
+
+        total_quantity += quantity_value;
         container.appendChild(clone);
     });
 
@@ -187,8 +236,35 @@ function render_cart(data) {
         `${total_quantity} ${total_quantity === 1 ? "item" : "items"} in your cart`;
     document.getElementById("bar-total").textContent = format_peso(data.grand_total);
 
-    document.getElementById("checkout-btn").classList.remove("disabled");
+    const checkout_button = document.getElementById("checkout-btn");
+    checkout_button.classList.toggle("disabled", has_stock_issue);
+    checkout_button.setAttribute("aria-disabled", String(has_stock_issue));
     bar.classList.remove("d-none");
+}
+
+async function change_quantity(item, quantity, button, stock_note) {
+    button.disabled = true;
+    stock_note.classList.add("d-none");
+
+    try {
+        if (quantity < 1) {
+            await delete_cart_item(item.product_id);
+        } else {
+            await update_cart_item(item.product_id, quantity);
+        }
+
+        await refresh_cart();
+    } catch (error) {
+        if (error.status === 401) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        console.error("Error updating cart quantity:", error);
+        stock_note.textContent = error.message || "Couldn't update the quantity. Please try again.";
+        stock_note.classList.remove("d-none");
+        button.disabled = false;
+    }
 }
 
 async function load_cart() {

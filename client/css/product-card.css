@@ -35,6 +35,8 @@
   overflow: hidden;
 }
 .product-card-price { color: var(--accent); font-weight: 600; margin: 0; }
+.product-card-stock { color: var(--muted); font-size: .78rem; margin: .25rem 0 0; }
+.product-card-stock.is-out { color: #a45b20; }
 
 @media (min-width: 992px) {
   .product-card { padding: 1rem; border-radius: 1.5rem; }

@@ -17,7 +17,7 @@
   height: 15rem;
   right: -4.5rem;
   top: -5rem;
-  background: var(--secondary);
+  background: rgba(128, 106, 79, .12);
   animation: breathe 7s ease-in-out infinite;
 }
 .hero-ring-b {
@@ -25,7 +25,7 @@
   height: 8rem;
   right: 2.5rem;
   bottom: -3rem;
-  background: var(--hover);
+  background: rgba(128, 106, 79, .2);
   animation: breathe 7s ease-in-out infinite reverse;
 }
 .hero-icon {
@@ -43,7 +43,7 @@
   font-size: 1.4rem;
   animation: bob 4s ease-in-out infinite;
 }
-.hero-copy { position: relative; max-width: 28rem; padding-right: 3.5rem; }
+.hero-copy { position: relative; max-width: 28rem; }
 .hero-tag {
   display: inline-flex;
   align-items: center;
@@ -130,7 +130,7 @@
   .hero-ring-a { width: 26rem; height: 26rem; right: -7rem; top: -9rem; }
   .hero-ring-b { width: 13rem; height: 13rem; right: 9rem; bottom: -5rem; }
   .hero-icon { width: 4.5rem; height: 4.5rem; font-size: 2rem; right: 4rem; top: 3rem; }
-  .hero-copy { max-width: 36rem; }
+  .hero-copy { max-width: 36rem; padding-right: 3.5rem; }
   .shelf-title { font-size: 1.5rem; }
   .browse-page .product-card { border-radius: 1.75rem; }
 }

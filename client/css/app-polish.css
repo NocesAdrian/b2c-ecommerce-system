@@ -1,0 +1,220 @@
+.app-nav {
+  border-bottom: 1px solid rgba(51, 44, 37, .07);
+  background: rgba(246, 245, 244, .92);
+  box-shadow: 0 .5rem 1.5rem rgba(51, 44, 37, .035);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.page-title {
+  letter-spacing: -.025em;
+}
+
+.nav-actions .menu-btn,
+.nav-actions .admin-nav-link {
+  box-shadow: 0 .25rem .75rem rgba(51, 44, 37, .045);
+}
+
+.nav-actions [aria-current="page"] {
+  background: var(--accent);
+  color: var(--primary);
+}
+
+.nav-actions [aria-current="page"]:hover {
+  background: #6c5942;
+  color: var(--primary);
+}
+
+.demo-main,
+.dash-page,
+.history-page,
+.carts-page,
+.checkout-page,
+.product-page,
+.profile-page {
+  padding-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+.history-page > .mb-3,
+.history-page > .mb-4,
+.products-head,
+.users-head,
+.dash-head,
+.profile-heading,
+.cart-page-heading {
+  position: relative;
+}
+
+.history-page > .mb-3,
+.history-page > .mb-4,
+.products-head,
+.users-head,
+.cart-page-heading {
+  margin-bottom: 1.5rem !important;
+}
+
+.history-page > .mb-3 .section-title,
+.history-page > .mb-4 .section-title,
+.products-head .section-title,
+.users-head .section-title,
+.dash-head .section-title,
+.profile-heading .section-title,
+.cart-page-heading .section-title {
+  letter-spacing: -.035em;
+}
+
+.cart-card,
+.order-card,
+.user-row-card,
+.stat-card,
+.insight-card,
+.items-card,
+.summary-card,
+.profile-card,
+.buy-card,
+.history-state,
+.cart-state {
+  border: 1px solid rgba(51, 44, 37, .055);
+  box-shadow: 0 .75rem 2rem rgba(51, 44, 37, .045);
+}
+
+.cart-card:hover,
+.order-card:hover,
+.user-row-card:hover {
+  box-shadow: 0 1rem 2.5rem rgba(51, 44, 37, .08);
+}
+
+.btn-d,
+.btn-soft,
+.filter-chip,
+.cart-qty-btn,
+.qty-btn,
+.cart-remove {
+  transition: background-color .2s, color .2s, box-shadow .2s, transform .15s;
+}
+
+.btn-d:focus-visible,
+.btn-soft:focus-visible,
+.filter-chip:focus-visible,
+.cart-qty-btn:focus-visible,
+.qty-btn:focus-visible,
+.cart-remove:focus-visible,
+.password-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.field-input,
+.profile-input,
+.form-control {
+  transition: background-color .2s, border-color .2s, box-shadow .2s;
+}
+
+.field-input:focus,
+.profile-input:focus,
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem rgba(128, 106, 79, .16);
+}
+
+.checkout-page > .mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.checkout-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.checkout-steps li + li::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  margin-right: .1rem;
+  background: var(--border);
+}
+
+.checkout-steps a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.checkout-steps a:hover {
+  color: var(--accent);
+}
+
+.checkout-steps .step-number {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--muted);
+  font-size: .75rem;
+}
+
+.checkout-steps [aria-current="step"] {
+  color: var(--text);
+}
+
+.checkout-steps [aria-current="step"] .step-number {
+  background: var(--accent);
+  color: var(--primary);
+}
+
+.product-image,
+.buy-card {
+  box-shadow: 0 1rem 3rem rgba(51, 44, 37, .065);
+}
+
+@media (max-width: 420px) {
+  .app-nav-row { column-gap: .4rem; }
+  .page-title { font-size: 1.1rem; }
+  .nav-actions { gap: .25rem; }
+  .nav-actions .menu-btn,
+  .nav-actions .admin-nav-link {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+  .nav-actions .menu-btn { font-size: 1.2rem; }
+  .checkout-steps { gap: .35rem; }
+  .checkout-steps li { gap: .3rem; font-size: .72rem; }
+  .checkout-steps li + li::before { width: .75rem; }
+}
+
+@media (max-width: 360px) {
+  .nav-actions { gap: .2rem; }
+  .nav-actions .menu-btn,
+  .nav-actions .admin-nav-link {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-d,
+  .btn-soft,
+  .filter-chip,
+  .cart-qty-btn,
+  .qty-btn,
+  .cart-remove,
+  .field-input,
+  .profile-input,
+  .form-control {
+    transition: none;
+  }
+}

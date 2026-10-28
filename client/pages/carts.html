@@ -12,6 +12,7 @@
   <link href="../css/carts.css" rel="stylesheet">
   <link href="../css/checkout-bar.css" rel="stylesheet">
   <link rel="stylesheet" href="../css/view-product.css">
+  <link rel="stylesheet" href="../css/app-polish.css">
 </head>
 
 <body>
@@ -21,12 +22,26 @@
     <div class="container">
       <div class="app-nav-row">
 
-        <h1 class="page-title">Carts</h1>
+        <a class="app-brand" href="../index.html" aria-label="Despera Merchandise home">
+          <img src="../resource/logo.svg" alt="Despera Merchandise">
+          <h1 class="visually-hidden">Carts</h1>
+        </a>
 
-        <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
-          aria-controls="sideMenu" aria-label="Open menu">
-          <i class="bi bi-list"></i>
-        </button>
+        <div class="nav-actions">
+          <a class="menu-btn" href="customer.html" aria-label="Browse" title="Browse">
+            <i class="bi bi-shop"></i>
+          </a>
+          <a class="menu-btn" href="carts.html" aria-label="Carts" title="Carts" aria-current="page">
+            <i class="bi bi-cart3"></i>
+          </a>
+          <a class="menu-btn" href="history.html" aria-label="History" title="History">
+            <i class="bi bi-clock-history"></i>
+          </a>
+          <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+            aria-controls="sideMenu" aria-label="Open menu">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
 
       </div>
     </div>
@@ -47,24 +62,31 @@
     <div class="offcanvas-body side-body">
 
       <!-- username | role -->
-      <div class="user-card">
+      <a class="user-card user-card-link" href="profile.html" aria-label="Edit your profile">
         <div class="avatar"><i class="bi bi-person"></i></div>
         <div class="user-info">
           <div class="user-name" id="username-display">username</div>
           <span class="role-pill">Customer</span>
         </div>
-      </div>
+        <i class="bi bi-chevron-right profile-chevron" aria-hidden="true"></i>
+      </a>
 
       <!-- navigation -->
       <nav class="side-nav" aria-label="Main navigation">
         <a href="customer.html" class="side-link">
-          <i class="bi bi-grid"></i><span>Browse</span>
+          <i class="bi bi-shop"></i><span>Browse</span>
         </a>
         <a href="carts.html" class="side-link active" aria-current="page">
-          <i class="bi bi-bag"></i><span>Carts</span>
+          <i class="bi bi-cart3"></i><span>Carts</span>
         </a>
         <a href="history.html" class="side-link">
           <i class="bi bi-clock-history"></i><span>History</span>
+        </a>
+        <a href="customer-service.html" class="side-link">
+          <i class="bi bi-chat-dots"></i><span>AI Customer Service</span>
+        </a>
+        <a href="about.html" class="side-link">
+          <i class="bi bi-question-circle"></i><span>About This Page</span>
         </a>
       </nav>
 
@@ -79,10 +101,11 @@
   <!-- CART -->
   <main class="container carts-page">
 
-    <a href="customer.html" class="back-link">
-      <i class="bi bi-arrow-left"></i> Back to browse
-    </a>
-
+    <div class="cart-page-heading">
+      <p class="eyebrow mb-2">Your collection</p>
+      <h2 class="section-title mb-1">Your cart</h2>
+      <p class="text-muted-d mb-0">Review your picks and quantities before checking out.</p>
+    </div>
 
     <!-- Cards are rendered here by ../scripts/carts.js -->
     <div class="row g-3" id="cart-list" aria-live="polite"></div>
@@ -114,9 +137,14 @@
           <h3 class="cart-name"></h3>
           <p class="cart-unit"></p>
           <div class="cart-meta">
-            <span class="cart-qty-value"></span>
+            <div class="cart-qty-control" aria-label="Change quantity">
+              <button type="button" class="cart-qty-btn cart-qty-minus" aria-label="Decrease quantity">−</button>
+              <span class="cart-qty-value"></span>
+              <button type="button" class="cart-qty-btn cart-qty-plus" aria-label="Increase quantity">+</button>
+            </div>
             <strong class="cart-line-total"></strong>
           </div>
+          <p class="cart-stock-note d-none" role="alert"></p>
           <p class="cart-error d-none" role="alert">Couldn't remove this item. Please try again.</p>
         </div>
         <button type="button" class="cart-remove" aria-label="Remove from cart" title="Remove from cart">
@@ -125,6 +153,17 @@
       </article>
     </div>
   </template>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a class="site-footer-brand" href="../index.html">Despera Merchandise</a>
+      <p>A fan-made demo store for school purposes. Nothing here is official.</p>
+      <nav aria-label="Footer navigation">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About this project</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/navbar.js"></script>

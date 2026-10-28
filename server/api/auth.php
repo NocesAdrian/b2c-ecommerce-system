@@ -28,10 +28,14 @@ switch ($requested_route) {
             exit(-1);
         }
 
+        $expires_in = (int) $author["expires_in"];
+        unset($author["expires_in"]);
+
         http_response_code(200);
         echo json_encode([
             "authenticated" => true,
-            "user" => $author
+            "user" => $author,
+            "expires_in" => $expires_in
         ]);
 
         exit(0);
@@ -89,9 +93,9 @@ switch ($requested_route) {
         setcookie("token", $token, [
             "expires" => $expire_at,
             "path" => "/",
-            "secure" => true,      // HTTPS only
-            "httponly" => true,    // No JavaScript access
-            "samesite" => "None"
+            "secure" => !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off",
+            "httponly" => true,
+            "samesite" => "Lax"
         ]);
 
         http_response_code(200);
@@ -109,13 +113,12 @@ switch ($requested_route) {
 
         $token_hash = hash("sha256", $token);
 
-        // Expire the cookie using the same settings as login
         setcookie("token", "", [
             "expires" => time() - 3600,
             "path" => "/",
-            "secure" => true,
+            "secure" => !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off",
             "httponly" => true,
-            "samesite" => "None"
+            "samesite" => "Lax"
         ]);
 
         $sessions->deleteByToken($token_hash);

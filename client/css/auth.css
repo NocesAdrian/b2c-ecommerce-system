@@ -120,3 +120,134 @@
   .auth-wrap { animation: none; }
   .auth-side .ring { animation: none; }
 }
+
+.auth {
+  min-height: 100svh;
+  padding: 1rem 0;
+}
+.auth-container { max-width: 68rem; }
+.auth-wrap {
+  border: 1px solid rgba(51, 44, 37, .06);
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 4rem rgba(51, 44, 37, .1);
+}
+.auth-side {
+  min-height: 11rem;
+  padding: 1.35rem 1.5rem;
+  color: #fff;
+  background-color: #332c25;
+  background-image: linear-gradient(180deg, rgba(24, 21, 18, .16), rgba(24, 21, 18, .86)),
+    url("../resource/despera-icon-2.jpg");
+  background-position: center 42%;
+  background-size: cover;
+}
+.auth-side .ring-a { background: rgba(246, 245, 244, .15); }
+.auth-side .ring-b { background: rgba(255, 255, 255, .12); }
+.auth-side .side-icon {
+  top: 1.25rem;
+  right: 1.5rem;
+  color: rgba(255, 255, 255, .9);
+  font-size: 1.7rem;
+}
+.auth-side-brand {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .19em;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.auth-side-brand span { margin-top: .25rem; font-size: .56rem; letter-spacing: .25em; opacity: .76; }
+.auth-side-brand:hover { color: #fff; }
+.auth-side-copy { position: relative; z-index: 1; max-width: 24rem; margin-top: 1.6rem; }
+.auth-side-kicker {
+  color: rgba(255, 255, 255, .8);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+}
+.auth-side h2 { font-size: clamp(1.45rem, 5vw, 2rem); margin-bottom: .45rem !important; }
+.auth-side p:not(.auth-side-kicker) { color: rgba(255, 255, 255, .82); font-size: .9rem; }
+.auth-side-foot { display: none; }
+.auth-form { padding: 1.5rem 1.25rem 1.75rem; }
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  margin-bottom: 1.25rem;
+  font-size: .78rem;
+}
+.auth-brand i { color: var(--accent); font-size: .75rem; }
+.auth-form h1 { font-size: clamp(1.7rem, 6vw, 2rem); letter-spacing: -.03em; }
+.auth-form .sub { margin-bottom: 1.35rem; }
+.auth-form .eyebrow { font-size: .7rem; }
+.field-label { margin-bottom: .45rem; }
+.field > .form-control { min-height: 3.15rem; }
+.auth-options { margin-top: .75rem; }
+.auth-options .form-check, .auth-show-password { min-height: 1.5rem; }
+.auth-error {
+  padding: .75rem .9rem;
+  margin: -.25rem 0 1rem;
+  border: 1px solid rgba(141, 57, 50, .14);
+  border-radius: .85rem;
+  background: #fbefed;
+  color: #8d3932;
+  font-size: .88rem;
+}
+.auth-error.d-none { display: none; }
+.auth-submit { min-height: 3.15rem; }
+.auth-submit:disabled { opacity: .72; cursor: wait; }
+.auth-switch { margin: 1.25rem 0 0; color: var(--muted); text-align: center; font-size: .9rem; }
+.auth-switch a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.auth-switch a:hover { text-decoration: underline; }
+.auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: 1.1rem;
+  color: var(--muted);
+  font-size: .82rem;
+  text-decoration: none;
+}
+.auth-back:hover { color: var(--text); }
+.auth-field-hint { display: block; margin-top: .35rem; color: var(--muted); font-size: .76rem; }
+.auth-show-password { margin-top: -.25rem; }
+
+@media (min-width: 576px) {
+  .auth { padding: 1.5rem 0; }
+  .auth-wrap { border-radius: 1.75rem; }
+  .auth-side { padding: 1.75rem 2rem; }
+  .auth-form { padding: 2rem 2.25rem 2.25rem; }
+}
+
+@media (min-width: 992px) {
+  .auth { padding: 2rem 0; }
+  .auth-wrap { border-radius: 2rem; }
+  .auth-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 39rem;
+    padding: 2.5rem;
+    border-radius: 2rem 0 0 2rem;
+  }
+  .auth-side .ring-a { width: 25rem; height: 25rem; top: -8rem; right: -9rem; }
+  .auth-side .ring-b { width: 14rem; height: 14rem; top: 4rem; right: 2rem; }
+  .auth-side .side-icon { top: 9rem; right: 2.5rem; font-size: 3rem; }
+  .auth-side-copy { margin-top: auto; margin-bottom: 1.5rem; }
+  .auth-side h2 { font-size: 2.25rem; }
+  .auth-side-foot { position: relative; z-index: 1; display: block; font-size: .62rem; letter-spacing: .17em; opacity: .7; }
+  .auth-form { padding: 3rem 3.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-wrap { animation: none; }
+}
+
+.auth { min-height: 0; }

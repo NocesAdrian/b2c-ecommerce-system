@@ -16,27 +16,31 @@
   <main class="auth">
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-11 col-xl-10">
+        <div class="col-12 col-md-10 col-lg-11 col-xl-10">
           <div class="auth-wrap">
             <div class="row g-0">
 
-              <!-- Brand panel (laptop/desktop) -->
-              <div class="col-lg-5 d-none d-lg-block">
-                <div class="auth-side h-100">
+              <div class="col-12 col-lg-5">
+                <div class="auth-side auth-side-login h-100">
                   <span class="ring ring-a"></span>
                   <span class="ring ring-b"></span>
-                  <i class="bi bi-wifi side-icon"></i>
-                  <h2 class="mb-3">Welcome back to Despera.</h2>
-                  <p>Your cart and orders are right where you left them.</p>
+                  <a href="../index.html" class="auth-side-brand">DESPERA <span>MERCHANDISE</span></a>
+                  <i class="bi bi-broadcast-pin side-icon" aria-hidden="true"></i>
+                  <div class="auth-side-copy">
+                    <p class="auth-side-kicker">Your signal, still on</p>
+                    <h2 class="mb-3">Welcome back to Despera.</h2>
+                    <p>Your cart and orders are right where you left them.</p>
+                  </div>
+                  <span class="auth-side-foot">A FAN-MADE DEMO STORE</span>
                 </div>
               </div>
 
-              <!-- Form -->
-              <div class="col-lg-7">
+              <div class="col-12 col-lg-7">
                 <div class="auth-form">
-                  <a href="index.html" class="auth-brand">Despera</a>
-                  <h1>Login</h1>
-                  <p class="sub">Sign in to continue shopping.</p>
+                  <a href="../index.html" class="auth-brand">DESPERA <i class="bi bi-arrow-up-right"></i></a>
+                  <p class="eyebrow mb-2">Good to see you again</p>
+                  <h1>Sign in</h1>
+                  <p class="sub">Pick up where you left off.</p>
 
                   <form id="login-form">
                     <div class="mb-3">
@@ -44,7 +48,7 @@
                       <div class="field">
                         <i class="bi bi-person"></i>
                         <input type="text" class="form-control" id="username" name="username"
-                          placeholder="Enter your username" autocomplete="username" required>
+                          placeholder="Your username" autocomplete="username" maxlength="255" required>
                       </div>
                     </div>
 
@@ -54,9 +58,10 @@
                         <i class="bi bi-lock"></i>
                         <input type="password" class="form-control" id="password" name="password"
                           placeholder="Enter your password" autocomplete="current-password" required>
-                        <div id="login-error" class="text-danger small mt-2" role="alert"></div>
                       </div>
                     </div>
+
+                    <div id="login-error" class="auth-error d-none" role="alert" aria-live="polite"></div>
 
                     <div class="d-flex flex-wrap justify-content-between gap-2 mb-4">
                       <div class="form-check">
@@ -71,11 +76,14 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                      <button type="submit" class="btn btn-d btn-block">Login</button>
-                      <a href="create-account.html" class="btn btn-soft btn-block">Create account</a>
-                      <a href="../index.html" class="btn btn-ghost btn-block">Cancel</a>
+                      <button type="submit" class="btn btn-d btn-block auth-submit">
+                        Sign in <i class="bi bi-arrow-right ms-2"></i>
+                      </button>
                     </div>
                   </form>
+
+                  <p class="auth-switch">New to the store? <a href="create-account.html">Create an account</a></p>
+                  <a href="../index.html" class="auth-back"><i class="bi bi-arrow-left"></i> Back to home</a>
                 </div>
               </div>
 
@@ -85,6 +93,17 @@
       </div>
     </div>
   </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a class="site-footer-brand" href="../index.html">Despera Merchandise</a>
+      <p>A fan-made demo store for school purposes. Nothing here is official.</p>
+      <nav aria-label="Footer navigation">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About this project</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../scripts/auth.js"></script>

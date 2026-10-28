@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About This Page | Despera Merchandise</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../css/index.css" rel="stylesheet">
+  <link href="../css/navbar.css" rel="stylesheet">
+  <link href="../css/about.css" rel="stylesheet">
+  <link href="../css/app-polish.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="app-nav sticky-top">
+    <div class="container">
+      <div class="app-nav-row">
+        <a class="app-brand" id="about-brand-link" href="../index.html" data-role-home-link aria-label="Despera Merchandise home">
+          <img src="../resource/logo.svg" alt="Despera Merchandise">
+          <h1 class="visually-hidden">About This Page</h1>
+        </a>
+        <nav class="nav-actions" aria-label="Page actions">
+          <a class="menu-btn" id="about-shortcut-link" href="customer.html" aria-label="Browse" title="Browse">
+            <i class="bi bi-shop"></i>
+          </a>
+          <button class="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu"
+            aria-controls="sideMenu" aria-label="Open menu">
+            <i class="bi bi-list"></i>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="offcanvas offcanvas-end side-menu" tabindex="-1" id="sideMenu" aria-labelledby="sideMenuLabel">
+    <div class="side-head">
+      <img class="logo-landscape" id="sideMenuLabel" alt="Despera Merchandise"
+        src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64'%3E%3Crect width='240' height='64' rx='14' fill='%23F0EDE8'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23FFFFFF'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23806A4F'/%3E%3Ctext x='58' y='38' font-family='system-ui,Segoe UI,sans-serif' font-size='18' font-weight='600' letter-spacing='4' fill='%23332C25'%3EDESPERA%3C/text%3E%3C/svg%3E">
+      <button type="button" class="menu-btn menu-btn-sm" data-bs-dismiss="offcanvas" aria-label="Close menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="offcanvas-body side-body">
+      <div class="user-card">
+        <div class="avatar"><i class="bi bi-person"></i></div>
+        <div class="user-info">
+          <div class="user-name" id="username-display">username</div>
+          <span class="role-pill" id="about-role">Account</span>
+        </div>
+      </div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <a href="customer.html" class="side-link" data-role-dashboard-link>
+          <i class="bi bi-shop"></i><span>Browse</span>
+        </a>
+        <a href="customer-service.html" class="side-link" data-role-chat-link>
+          <i class="bi bi-chat-dots"></i><span>AI Customer Service</span>
+        </a>
+        <a href="about.html" class="side-link active" aria-current="page">
+          <i class="bi bi-question-circle"></i><span>About This Page</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="container about-page">
+    <section class="about-hero">
+      <div class="about-hero-copy">
+        <p class="eyebrow mb-2">A fan-made demo store</p>
+        <h2 class="section-title mb-3">About Despera Merchandise</h2>
+        <p class="about-lead mb-0">
+          A student-built storefront inspired by the anime Despera, made to explore its aesthetic through a curated
+          collection of apparel, accessories, and everyday items.
+        </p>
+      </div>
+      <figure class="about-hero-art">
+        <img src="../resource/despera-icon.jpg" alt="Ain, the main character of Despera">
+        <figcaption><span>CHARACTER STUDY</span><span>AIN / DESPERA</span></figcaption>
+      </figure>
+    </section>
+
+    <section class="about-anime" aria-labelledby="anime-heading">
+      <div class="about-section-icon" aria-hidden="true"><i class="bi bi-stars"></i></div>
+      <div>
+        <p class="eyebrow mb-2">The inspiration</p>
+        <h2 class="section-title mb-2" id="anime-heading">About the anime</h2>
+        <p class="mb-0">
+          Despera is the anime inspiration behind this collection. The store draws on its distinctive signal-inspired
+          mood to present fan-made merchandise concepts. This is an independent school project and is not an official
+          Despera shop or affiliated with the anime's creators.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-team" aria-labelledby="team-heading">
+      <div class="about-section-heading">
+        <p class="eyebrow mb-2">The people behind this project</p>
+        <h2 class="section-title mb-0" id="team-heading">Meet the team</h2>
+      </div>
+      <div class="row g-3 g-lg-4">
+        <div class="col-12 col-md-6">
+          <article class="about-person">
+            <img class="about-person-photo" src="../images/samuel-mindaro-pfp.jpg" alt="Samuel S. Mindaro, Jr.">
+            <div>
+              <p class="about-person-role">Instructor</p>
+              <h3>Samuel S. Mindaro, Jr.</h3>
+              <p class="mb-0">Instructor for Information Management</p>
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6">
+          <article class="about-person">
+            <img class="about-person-photo" src="../images/adriannoces-pfp.jpg" alt="Adrian Noces">
+            <div>
+              <p class="about-person-role">Student &amp; developer</p>
+              <h3>Adrian Noces</h3>
+              <p class="mb-0">Student and the sole developer of this web app</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-coffee" aria-labelledby="coffee-heading">
+      <div>
+        <p class="eyebrow mb-2">Support the project</p>
+        <h2 class="section-title mb-2" id="coffee-heading">Enjoying the demo?</h2>
+        <p class="mb-0">You can buy me a coffee by scanning the GCash QR code.</p>
+      </div>
+      <button type="button" class="btn btn-d about-coffee-btn" data-bs-toggle="modal" data-bs-target="#coffeeModal">
+        <i class="bi bi-cup-hot me-2"></i>Buy me a coffee
+      </button>
+    </section>
+  </main>
+
+  <div class="modal fade" id="coffeeModal" tabindex="-1" aria-labelledby="coffeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content coffee-modal">
+        <div class="modal-header border-0">
+          <h2 class="modal-title fs-5" id="coffeeModalLabel">Buy me a coffee</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p>Scan this GCash QR code to send your support.</p>
+          <div class="coffee-qr">
+            <img src="../images/gcash-qr.png" alt="GCash QR code for supporting the developer">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a class="site-footer-brand" href="../index.html" data-role-home-link>Despera Merchandise</a>
+      <p>A fan-made demo store for school purposes. Nothing here is official.</p>
+      <nav aria-label="Footer navigation">
+        <a href="../index.html" data-role-home-link>Home</a>
+        <a href="about.html" aria-current="page" data-role-about-link>About this project</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../scripts/navbar.js"></script>
+  <script src="../scripts/role-navigation.js"></script>
+  <script type="module" src="../api/auth.js"></script>
+  <script type="module" src="../api/delete-sessions.js"></script>
+</body>
+
+</html>

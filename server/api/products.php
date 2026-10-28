@@ -1,7 +1,5 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
@@ -11,6 +9,9 @@ $storage_path = $config["storage_path"];
 
 require_once $service_path."products.php";
 $products = new ProductRepository($db_path, $storage_path);
+require_once $service_path."sessions.php";
+$sessions = new SessionRepository($db_path);
+require_once $service_path."authorization.php";
 
 switch ($requested_route) {
     case "/api/products":
@@ -20,6 +21,8 @@ switch ($requested_route) {
         exit(0);
 
     case "/api/products/create":
+
+        requireAdminUser($sessions);
 
         $category_id = $_POST["category_id"] ?? '';
         $name = $_POST["name"] ?? '';
@@ -61,8 +64,9 @@ switch ($requested_route) {
 
         exit(0);
 
-    // TODO make it soft delete never delete it on  instead just hide it when stock is 0
     case "/api/products/delete":
+
+        requireAdminUser($sessions);
 
         $body = $products->getJsonBody();
 
@@ -87,6 +91,8 @@ switch ($requested_route) {
         exit(0);
 
     case "/api/products/update":
+
+        requireAdminUser($sessions);
 
         $id = $_POST["id"] ?? '';
         $category_id = $_POST["category_id"] ?? '';

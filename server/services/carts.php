@@ -13,5 +13,19 @@ class CartRepository extends BaseRepository
         "user_id",
         "date_created"
     ];
+
+    public function ensureForUser(int $user_id): array
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO carts (user_id)
+            VALUES (?)
+            ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);
+        ");
+        $stmt->execute([$user_id]);
+
+        return [
+            "id" => (int) $this->db->lastInsertId()
+        ];
+    }
 }
 ?>

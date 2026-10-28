@@ -1,0 +1,131 @@
+.about-page { padding-top: 2rem; padding-bottom: 4rem; }
+
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, .8fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 3.5rem);
+  background: var(--primary);
+  border-radius: 1.5rem;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  margin-bottom: 1.25rem;
+}
+.about-lead { max-width: 48rem; color: var(--muted); line-height: 1.7; font-size: 1.08rem; }
+.about-hero-art {
+  position: relative;
+  margin: 0;
+  padding: .65rem .65rem 2.8rem;
+  background: #e8e1d7;
+  border-radius: 1.1rem;
+  transform: rotate(1.5deg);
+}
+.about-hero-art img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 38%;
+  border-radius: .7rem;
+}
+.about-hero-art figcaption {
+  position: absolute;
+  right: .9rem;
+  bottom: .85rem;
+  left: .9rem;
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  color: var(--muted);
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+}
+
+.about-anime {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--primary);
+  border-radius: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 3rem;
+}
+.about-anime .section-title { color: var(--text); }
+.about-section-icon {
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+.about-section-heading { margin-bottom: 1.25rem; }
+
+.about-person {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--primary);
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+}
+.about-person-photo {
+  width: 6rem;
+  height: 6rem;
+  flex: none;
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--secondary);
+}
+.about-person-role {
+  color: var(--accent);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .35rem;
+}
+.about-person h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: .35rem; }
+.about-person p:last-child { color: var(--muted); }
+
+.about-coffee {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--secondary);
+  border-radius: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  margin-top: 3rem;
+}
+.about-coffee p:last-child { color: var(--muted); }
+.about-coffee-btn { flex: none; }
+
+.coffee-modal { background: var(--primary); border: 0; border-radius: 1.5rem; }
+.coffee-modal .modal-body { padding: .5rem 1.5rem 2rem; }
+.coffee-modal .modal-body > p { color: var(--muted); }
+.coffee-qr {
+  width: min(100%, 20rem);
+  aspect-ratio: 1;
+  padding: .75rem;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 1rem;
+}
+.coffee-qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+@media (max-width: 767.98px) {
+  .about-hero { grid-template-columns: 1fr; }
+  .about-hero-art { max-width: 25rem; width: 100%; justify-self: center; }
+}
+
+@media (max-width: 575.98px) {
+  .about-coffee { align-items: stretch; flex-direction: column; }
+  .about-coffee-btn { width: 100%; }
+}

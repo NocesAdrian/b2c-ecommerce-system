@@ -1,7 +1,5 @@
 <?php
 
-// ============== IMPLEMENT AUTH LATER ================== //
-
 $config = getConfig();
 
 $db_path = $config["db_path"];
@@ -10,6 +8,9 @@ $service_path = $config["services_path"];
 
 require_once $service_path."categories.php";
 $categories = new CategoryRepository($db_path);
+require_once $service_path."sessions.php";
+$sessions = new SessionRepository($db_path);
+require_once $service_path."authorization.php";
 
 switch ($requested_route) {
     case "/api/categories":
@@ -19,6 +20,8 @@ switch ($requested_route) {
         exit(0);
 
     case "/api/categories/create":
+
+        requireAdminUser($sessions);
 
         $body = $categories->getJsonBody();
 
@@ -30,6 +33,8 @@ switch ($requested_route) {
         exit(0);
 
     case "/api/categories/delete":
+
+        requireAdminUser($sessions);
 
         $body = $categories->getJsonBody();
 
@@ -48,6 +53,8 @@ switch ($requested_route) {
         exit(0);
 
     case "/api/categories/update":
+
+        requireAdminUser($sessions);
 
         $body = $categories->getJsonBody();
 

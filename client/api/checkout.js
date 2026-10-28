@@ -60,6 +60,7 @@ function render_checkout(data) {
     const template = document.getElementById("checkout-item-template");
     const container = document.getElementById("checkoutItems");
     const pay_button = document.getElementById("payBtn");
+    const stock_warning = document.getElementById("checkout-stock-warning");
 
     if (!template || !container) {
         console.error("Checkout template or container not found.");
@@ -70,6 +71,7 @@ function render_checkout(data) {
 
     if (items.length === 0) {
         show_message("bi-bag", "Your cart is empty.");
+        stock_warning.classList.add("d-none");
         set_summary(0, 0);
         pay_button.disabled = true;
         return;
@@ -78,6 +80,7 @@ function render_checkout(data) {
     container.innerHTML = "";
 
     let total_quantity = 0;
+    const unavailable_items = [];
 
     items.forEach(item => {
         const clone = template.content.cloneNode(true);
@@ -86,6 +89,7 @@ function render_checkout(data) {
         const name = clone.querySelector(".co-name");
         const quantity = clone.querySelector(".co-qty-value");
         const line_total = clone.querySelector(".co-total");
+        const stock_note = clone.querySelector(".co-stock-note");
 
         // Image path is relative to the API origin
         if (item.image_path) {
@@ -99,12 +103,25 @@ function render_checkout(data) {
         quantity.textContent = `× ${item.product_quantity}`;
         line_total.textContent = format_peso(Number(item.product_price) * Number(item.product_quantity));
 
+        if (Number(item.product_quantity) > Number(item.product_stocks)) {
+            unavailable_items.push(item.product_name);
+            stock_note.textContent = Number(item.product_stocks) > 0
+                ? `Only ${item.product_stocks} available`
+                : "Out of stock";
+            stock_note.classList.remove("d-none");
+        }
+
         total_quantity += Number(item.product_quantity);
         container.appendChild(clone);
     });
 
     set_summary(total_quantity, data.grand_total);
-    pay_button.disabled = false;
+    const has_stock_issue = unavailable_items.length > 0;
+    pay_button.disabled = has_stock_issue;
+    stock_warning.textContent = has_stock_issue
+        ? `Please adjust or remove items with insufficient stock before checkout: ${unavailable_items.join(", ")}.`
+        : "";
+    stock_warning.classList.toggle("d-none", !has_stock_issue);
 }
 
 async function load_checkout() {
@@ -188,16 +205,18 @@ async function mark_order_paid(order_id) {
         body: JSON.stringify({ order_id })
     });
 
+    const body = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-        const error = new Error(`Failed to mark order as paid: ${response.status}`);
+        const error = new Error(body.error || `Failed to mark order as paid: ${response.status}`);
         error.status = response.status;
         throw error;
     }
 
-    return await response.json();
+    return body;
 }
 
-function show_order_placed(pay_mode, data, is_paid) {
+function show_order_placed(pay_mode, data, is_paid, pay_error = null) {
     document.getElementById("gcashIcon").innerHTML = '<i class="bi bi-check2-circle"></i>';
     const order_label = `Order #${data.order_id} (${format_peso(data.total_price)})`;
 
@@ -213,7 +232,9 @@ function show_order_placed(pay_mode, data, is_paid) {
         // The order exists, but marking it as paid failed
         document.getElementById("gcashTitle").textContent = "Order placed";
         document.getElementById("gcashText").textContent =
-            `${order_label} is placed, but we couldn't mark it as paid. You can pay from History.`;
+            pay_error?.status === 409
+                ? `${order_label} is placed but could not be paid because stock is no longer available. Review your order in History.`
+                : `${order_label} is placed, but we couldn't mark it as paid. You can pay from History.`;
     }
 
     document.getElementById("gcashQr").classList.add("d-none");
@@ -246,18 +267,20 @@ async function place_order(pay_mode, clicked_button) {
     try {
         const data = await create_order();
         let is_paid = false;
+        let pay_error = null;
 
         if (pay_mode === "paid") {
             try {
                 await mark_order_paid(data.order_id);
                 is_paid = true;
-            } catch (pay_error) {
+            } catch (error) {
                 // The order was already created, so don't let the customer retry from here
-                console.error("Error marking order as paid:", pay_error);
+                pay_error = error;
+                console.error("Error marking order as paid:", error);
             }
         }
 
-        show_order_placed(pay_mode, data, is_paid);
+        show_order_placed(pay_mode, data, is_paid, pay_error);
     } catch (error) {
         if (error.status === 401) {
             window.location.href = "login.html";

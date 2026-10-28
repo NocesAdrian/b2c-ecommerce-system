@@ -11,12 +11,47 @@
 }
 
 body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
   background: var(--secondary);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+body > main { flex: 1 0 auto; }
 section { padding: 3rem 0; }
+
+.site-footer {
+  flex: none;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: var(--primary);
+  color: var(--muted);
+  padding: 1.5rem 0;
+  font-size: .88rem;
+}
+.site-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+}
+.site-footer-brand {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+.site-footer-brand:hover { color: var(--accent); }
+.site-footer p { margin: 0; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+.site-footer nav a { color: var(--muted); text-decoration: none; }
+.site-footer nav a:hover { color: var(--accent); }
+
+@media (max-width: 575.98px) {
+  .site-footer-inner { flex-direction: column; align-items: flex-start; }
+}
 
 .eyebrow {
   color: var(--accent);

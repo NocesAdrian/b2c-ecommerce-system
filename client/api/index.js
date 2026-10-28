@@ -15,22 +15,16 @@ async function auth(api_endpoint) {
     const body = await response.json();
 
     if (response.ok && body.authenticated) {
-        console.log(body.user);
         if (body.user.role_id > 1) {
-            window.open("pages/customer.html", "_blank");
-            window.close();
+            window.location.replace("pages/customer.html");
             return;
         }
 
-        window.open("pages/admin.html", "_blank");
-        window.close()
+        window.location.replace("pages/admin.html");
         return;
     }
-    console.log("Not authenticated");
-
 }
 
 window.addEventListener("load", () => {
-    console.log("Page fully loaded!");
     auth(api_endpoint);
 });

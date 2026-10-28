@@ -54,6 +54,8 @@
 
 /* ---------- 2. Loading skeleton ------------------------------------------ */
 
+.browse-page #product-list > section { padding: 0; }
+
 .ba-skel-grid {
   column-count: 2;
   column-gap: 12px;
