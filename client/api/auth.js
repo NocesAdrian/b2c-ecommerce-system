@@ -13,7 +13,7 @@ const greeting_key_prefix = "customer-service-greeting-v1-";
 let session_check_timer;
 
 // Pages only admins may open (matched by file name)
-const admin_pages = ["admin.html", "products.html", "orders.html", "users.html"];
+const admin_pages = ["admin.html", "products.html", "orders.html", "reports.html", "users.html"];
 
 function current_page() {
     return window.location.pathname.split("/").pop() || "index.html";

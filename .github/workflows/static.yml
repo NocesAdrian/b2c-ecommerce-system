@@ -2,9 +2,9 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes to the production branch
   push:
-    branches: ["copilot"]
+    branches: ["production"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
+          # Publish the static client; preserve its relative page and asset paths.
           path: 'client'
       - name: Deploy to GitHub Pages
         id: deployment

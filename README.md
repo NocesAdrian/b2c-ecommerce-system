@@ -37,6 +37,12 @@ A local-demo merchandise shop with customer browsing, carts, checkout, order his
 
 The database volume is stored under `database/` and persists between starts. Do not remove or replace it to reset the database unless you have backed up any data you want to keep.
 
+## GitHub Pages frontend
+
+The GitHub Actions workflow publishes only `client/`, keeping its relative page links and asset paths intact for the repository subpath. It deploys when changes are pushed to the `production` branch or when manually started from the Actions tab. Enable GitHub Pages for the repository with **Build and deployment → GitHub Actions**. The project site URL is `https://nocesadrian.github.io/b2c-ecommerce-system/`.
+
+The frontend's API origin is configured in `client/config.js`; it must point to a separately hosted PHP API. The PHP API allows the GitHub Pages origin by default when no CORS origin environment variable is set. Otherwise, configure `CLIENT_ORIGIN=https://nocesadrian.github.io` or `CLIENT_ORIGINS` with a comma-separated allowlist. Because GitHub Pages and the current PHP host use different site domains, browser third-party-cookie restrictions can prevent login/session cookies from working even with CORS configured. For reliable authenticated use, host the frontend and API on the same site domain (for example, serve `client/` from the PHP host) or put both behind a same-site custom domain and configure HTTPS and cookies accordingly.
+
 ## Demo payment limitation
 
 The GCash screen is a demonstration only. The customer manually confirms that payment was made, and the server records the order as paid; no payment provider verifies or processes money. Do not use this flow for real payments or deploy it as a production store without a payment-provider integration and production security/configuration review.

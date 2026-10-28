@@ -2,9 +2,28 @@
 
 // ================ SERVER THINGS ==================== //
 header("Content-Type: application/json; charset=UTF-8");
-$client_origin = getenv("CLIENT_ORIGIN") ?: "http://127.0.0.1:5500";
-header("Access-Control-Allow-Origin: ".$client_origin);
-header("Access-Control-Allow-Credentials: true");
+// Match the requesting origin exactly; credentialed CORS cannot use multiple
+// Access-Control-Allow-Origin headers or a wildcard.
+$allowed_origins = [
+    "https://nocesadrian.github.io",
+    "https://adriannoces.free.je",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500"
+];
+$configured_origins = getenv("CLIENT_ORIGINS") ?: getenv("CLIENT_ORIGIN") ?: "";
+if (trim($configured_origins) !== "") {
+    $allowed_origins = array_merge(
+        $allowed_origins,
+        array_filter(array_map("trim", explode(",", $configured_origins)))
+    );
+}
+$allowed_origins = array_unique($allowed_origins);
+$request_origin = $_SERVER["HTTP_ORIGIN"] ?? "";
+if (in_array($request_origin, $allowed_origins, true)) {
+    header("Access-Control-Allow-Origin: ".$request_origin);
+    header("Access-Control-Allow-Credentials: true");
+    header("Vary: Origin");
+}
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
