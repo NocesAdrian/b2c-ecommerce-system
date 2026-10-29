@@ -109,7 +109,7 @@ function show_login_notification(title_text, message, user) {
     summary.textContent = message;
     const link = document.createElement("a");
     link.href = user.role_id === role_admin ? "customer-service.html?from=admin" : "customer-service.html";
-    link.textContent = "Ask customer service";
+    link.textContent = "Chat with Ain";
     body.append(summary, link);
     toast.append(header, body);
     container.append(toast);

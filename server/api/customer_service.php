@@ -30,12 +30,24 @@ switch ($requested_route) {
         }
 
         try {
+            $context = $customer_service->getAssistantContext($author);
+            $retry_after = $customer_service->reserveGeminiRequest();
+            if ($retry_after > 0) {
+                header("Retry-After: ".$retry_after);
+                http_response_code(429);
+                echo json_encode([
+                    "error" => "The store AI is busy. Please wait before trying again.",
+                    "retry_after" => $retry_after
+                ]);
+                exit;
+            }
+
             $greeting = $assistant->reply(
                 [[
                     "sender" => "user",
-                    "message" => "Write a brief personalized welcome notification for this login. Summarize the current order status counts and the most relevant recent updates for this user. For an admin, mention store-wide pending orders, overall statuses, and new products when present. For a customer, only discuss that customer's orders and relevant new products. Be accurate, friendly, and concise (up to 3 short sentences). Do not use Markdown, mention AI, or refer to missing data."
+                    "message" => "As Ain, write a brief, thoughtful welcome notification for this login. Summarize the current order status counts and most relevant updates. For admins, mention store-wide pending orders, overall statuses, and new products when present. For customers, discuss only their own orders and relevant new products. Be accurate and concise (up to 3 short sentences). Do not use Markdown, mention AI, or refer to missing data."
                 ]],
-                $customer_service->getAssistantContext($author)
+                $context
             );
         } catch (RuntimeException $error) {
             error_log("Customer service login greeting error: ".$error->getMessage());
@@ -106,11 +118,23 @@ switch ($requested_route) {
             exit;
         }
 
+        $context = $customer_service->getAssistantContext($author);
+        $retry_after = $customer_service->reserveGeminiRequest();
+        if ($retry_after > 0) {
+            header("Retry-After: ".$retry_after);
+            http_response_code(429);
+            echo json_encode([
+                "error" => "The store AI is busy. Please wait before trying again.",
+                "retry_after" => $retry_after
+            ]);
+            exit;
+        }
+
         $history = $customer_service->getRecentMessages($conversation_id);
         $history[] = ["sender" => "user", "message" => $message];
 
         try {
-            $reply = $assistant->reply($history, $customer_service->getAssistantContext($author));
+            $reply = $assistant->reply($history, $context);
         } catch (RuntimeException $error) {
             error_log("Customer service assistant error: ".$error->getMessage());
             http_response_code(503);
@@ -125,7 +149,8 @@ switch ($requested_route) {
                 "sender" => "assistant",
                 "message" => $reply,
                 "date_created" => date("Y-m-d H:i:s")
-            ]
+            ],
+            "retry_after" => $customer_service->getGeminiCooldownRemaining()
         ]);
         exit;
 

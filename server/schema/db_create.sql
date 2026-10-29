@@ -129,3 +129,11 @@ CREATE TABLE customer_service_messages (
     CONSTRAINT fk_customer_service_messages_conversation
         FOREIGN KEY (conversation_id) REFERENCES customer_service_conversations(id) ON DELETE CASCADE
 );
+
+CREATE TABLE gemini_request_limiter (
+    id TINYINT UNSIGNED NOT NULL PRIMARY KEY,
+    last_request_at DATETIME(6) NULL
+);
+
+INSERT INTO gemini_request_limiter (id, last_request_at)
+VALUES (1, NULL);

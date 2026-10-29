@@ -12,6 +12,37 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 const send_button = document.getElementById("chat-send");
 const error_element = document.getElementById("chat-error");
+const input_note = document.getElementById("chat-input-note");
+let send_in_progress = false;
+let cooldown_until = 0;
+let cooldown_interval;
+
+function update_cooldown(seconds) {
+    const duration = Number.isFinite(seconds) ? Math.max(0, seconds) : 60;
+    cooldown_until = Date.now() + duration * 1000;
+    clearInterval(cooldown_interval);
+
+    const update_note = () => {
+        const remaining = Math.ceil((cooldown_until - Date.now()) / 1000);
+        if (remaining <= 0) {
+            clearInterval(cooldown_interval);
+            cooldown_interval = undefined;
+            input_note.textContent = "Up to 2,000 characters per message. The store AI is shared; allow up to one minute between requests.";
+            send_button.disabled = send_in_progress;
+            input.disabled = send_in_progress;
+            return;
+        }
+
+        input_note.textContent = `Chat is on cooldown. You can send another message in ${remaining} second${remaining === 1 ? "" : "s"}.`;
+        send_button.disabled = true;
+        input.disabled = true;
+    };
+
+    update_note();
+    if (duration > 0) {
+        cooldown_interval = setInterval(update_note, 1000);
+    }
+}
 
 function render_inline_markdown(text, parent) {
     const token_pattern = /(`[^`]+`|\*\*[^*]+\*\*|__[^_]+__|~~[^~]+~~|\*[^*\n]+\*|_[^_\n]+_|\[[^\]]+\]\([^)]+\))/g;
@@ -299,9 +330,10 @@ async function load_updates() {
 form.addEventListener("submit", async event => {
     event.preventDefault();
     const message = input.value.trim();
-    if (!message || send_button.disabled) return;
+    if (!message || send_button.disabled || Date.now() < cooldown_until) return;
 
     error_element.classList.add("d-none");
+    send_in_progress = true;
     send_button.disabled = true;
     input.disabled = true;
     const status = document.createElement("p");
@@ -321,9 +353,14 @@ form.addEventListener("submit", async event => {
         status.remove();
 
         if (!response.ok) {
+            if (response.status === 429) {
+                const retry_after = Number(response.headers.get("Retry-After") || body.retry_after || 60);
+                update_cooldown(retry_after);
+            }
             throw new Error(body.error || "Couldn't send your message.");
         }
 
+        update_cooldown(Number(body.retry_after ?? 60));
         const empty_state = messages_element.querySelector(".chat-status");
         empty_state?.remove();
         render_message({ sender: "user", message });
@@ -334,9 +371,10 @@ form.addEventListener("submit", async event => {
         error_element.textContent = error.message || "Couldn't send your message. Please try again.";
         error_element.classList.remove("d-none");
     } finally {
-        send_button.disabled = false;
-        input.disabled = false;
-        input.focus();
+        send_in_progress = false;
+        send_button.disabled = Date.now() < cooldown_until;
+        input.disabled = Date.now() < cooldown_until;
+        if (!input.disabled) input.focus();
     }
 });
 
