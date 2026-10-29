@@ -4,6 +4,6 @@ export const get_config = () => {
     return {
         api_src: is_local
             ? "http://127.0.0.1:8081"
-            : "https://despera-merchandise.42web.io",
+            : "https://adriannoces.free.je",
     };
 }
