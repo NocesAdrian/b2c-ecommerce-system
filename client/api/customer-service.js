@@ -18,6 +18,20 @@ let conversation_loaded = false;
 let cooldown_until = 0;
 let cooldown_interval;
 
+function sync_chat_viewport() {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    document.documentElement.style.setProperty(
+        "--chat-viewport-height",
+        `${viewport.height + viewport.offsetTop}px`
+    );
+}
+
+sync_chat_viewport();
+window.addEventListener("resize", sync_chat_viewport);
+window.visualViewport?.addEventListener("resize", sync_chat_viewport);
+window.visualViewport?.addEventListener("scroll", sync_chat_viewport);
+
 function update_send_controls() {
     const disabled = send_in_progress || !conversation_loaded || Date.now() < cooldown_until;
     send_button.disabled = disabled;
