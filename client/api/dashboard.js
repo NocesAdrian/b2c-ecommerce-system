@@ -479,9 +479,9 @@ async function load_recent_orders() {
     }
 }
 
-function load_dashboard() {
-    load_stats();
-    load_recent_orders();
+async function load_dashboard() {
+    await load_stats();
+    await load_recent_orders();
 }
 
 const reveal_observer = new IntersectionObserver((entries) => {
