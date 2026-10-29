@@ -7,6 +7,7 @@ header("Content-Type: application/json; charset=UTF-8");
 $allowed_origins = [
     "https://nocesadrian.github.io",
     "https://adriannoces.free.je",
+    "https://despera-merchandise.42web.io",
     "http://127.0.0.1:5500",
     "http://localhost:5500"
 ];

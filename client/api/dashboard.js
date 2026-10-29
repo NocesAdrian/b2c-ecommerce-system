@@ -484,6 +484,19 @@ function load_dashboard() {
     load_recent_orders();
 }
 
+const reveal_observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            reveal_observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12 });
+
+document.querySelectorAll(".dash-page .reveal").forEach(element => {
+    reveal_observer.observe(element);
+});
+
 document.getElementById("refresh-btn").addEventListener("click", load_dashboard);
 document.getElementById("dashboard-search-form").addEventListener("submit", event => {
     event.preventDefault();

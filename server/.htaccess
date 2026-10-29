@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Frontend pages and assets are static files, not API routes.
+RewriteRule ^client/ - [L]
+RewriteRule ^favicon\.ico$ - [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]
