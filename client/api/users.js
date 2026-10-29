@@ -275,6 +275,11 @@ async function handle_submit(event) {
         return;
     }
 
+    if (is_edit && (username.length < 4 || username.length > 255)) {
+        show_form_error("Username must contain between 4 and 255 characters.");
+        return;
+    }
+
     if (!is_edit && !password) {
         show_form_error("Please enter a password.");
         return;

@@ -14,8 +14,15 @@ const send_button = document.getElementById("chat-send");
 const error_element = document.getElementById("chat-error");
 const input_note = document.getElementById("chat-input-note");
 let send_in_progress = false;
+let conversation_loaded = false;
 let cooldown_until = 0;
 let cooldown_interval;
+
+function update_send_controls() {
+    const disabled = send_in_progress || !conversation_loaded || Date.now() < cooldown_until;
+    send_button.disabled = disabled;
+    input.disabled = disabled;
+}
 
 function update_cooldown(seconds) {
     const duration = Number.isFinite(seconds) ? Math.max(0, seconds) : 60;
@@ -28,14 +35,12 @@ function update_cooldown(seconds) {
             clearInterval(cooldown_interval);
             cooldown_interval = undefined;
             input_note.textContent = "Up to 2,000 characters per message. The store AI is shared; allow up to one minute between requests.";
-            send_button.disabled = send_in_progress;
-            input.disabled = send_in_progress;
+            update_send_controls();
             return;
         }
 
         input_note.textContent = `Chat is on cooldown. You can send another message in ${remaining} second${remaining === 1 ? "" : "s"}.`;
-        send_button.disabled = true;
-        input.disabled = true;
+        update_send_controls();
     };
 
     update_note();
@@ -225,6 +230,18 @@ function render_markdown_blocks(text, parent) {
     }
 }
 
+function append_message_timestamp(bubble, message) {
+    if (!message.date_created) return;
+
+    const time = document.createElement("time");
+    const date = new Date(`${message.date_created.replace(" ", "T")}Z`);
+    time.dateTime = Number.isNaN(date.getTime()) ? "" : date.toISOString();
+    time.textContent = Number.isNaN(date.getTime())
+        ? ""
+        : date.toLocaleString([], { dateStyle: "short", timeStyle: "short" });
+    bubble.append(time);
+}
+
 function render_message(message) {
     const bubble = document.createElement("article");
     bubble.className = `chat-message chat-message-${message.sender}`;
@@ -237,19 +254,75 @@ function render_message(message) {
         text.textContent = message.message;
     }
     bubble.append(text);
-
-    if (message.date_created) {
-        const time = document.createElement("time");
-        const date = new Date(`${message.date_created.replace(" ", "T")}Z`);
-        time.dateTime = Number.isNaN(date.getTime()) ? "" : date.toISOString();
-        time.textContent = Number.isNaN(date.getTime())
-            ? ""
-            : date.toLocaleString([], { dateStyle: "short", timeStyle: "short" });
-        bubble.append(time);
-    }
+    append_message_timestamp(bubble, message);
 
     messages_element.append(bubble);
     messages_element.scrollTop = messages_element.scrollHeight;
+}
+
+function render_thinking_indicator() {
+    const indicator = document.createElement("div");
+    indicator.className = "chat-message chat-message-assistant chat-thinking";
+    indicator.setAttribute("role", "status");
+    indicator.setAttribute("aria-label", "Ain is thinking");
+
+    const label = document.createElement("span");
+    label.textContent = "Ain is thinking";
+    const dots = document.createElement("span");
+    dots.className = "chat-thinking-dots";
+    dots.setAttribute("aria-hidden", "true");
+    dots.append(document.createElement("span"), document.createElement("span"), document.createElement("span"));
+    indicator.append(label, dots);
+    messages_element.append(indicator);
+    messages_element.scrollTop = messages_element.scrollHeight;
+    return indicator;
+}
+
+function render_animated_reply(message) {
+    const bubble = document.createElement("article");
+    bubble.className = "chat-message chat-message-assistant";
+    bubble.setAttribute("aria-live", "off");
+    const text = document.createElement("div");
+    text.className = "chat-markdown chat-typing-text";
+    text.setAttribute("aria-hidden", "true");
+    bubble.append(text);
+    messages_element.append(bubble);
+
+    const words = message.message.match(/\S+\s*/gu) || [];
+    const word_delay = Math.min(55, 3500 / Math.max(words.length, 1));
+    let index = 0;
+
+    return new Promise(resolve => {
+        const finish_render = () => {
+            text.classList.remove("chat-typing-text");
+            text.replaceChildren();
+            render_markdown_blocks(message.message, text);
+            text.removeAttribute("aria-hidden");
+            bubble.setAttribute("aria-live", "polite");
+            append_message_timestamp(bubble, message);
+            messages_element.scrollTop = messages_element.scrollHeight;
+            resolve();
+        };
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            finish_render();
+            return;
+        }
+
+        const reveal_next_word = () => {
+            if (index < words.length) {
+                text.textContent += words[index];
+                index += 1;
+                messages_element.scrollTop = messages_element.scrollHeight;
+                window.setTimeout(reveal_next_word, word_delay);
+                return;
+            }
+
+            finish_render();
+        };
+
+        reveal_next_word();
+    });
 }
 
 function render_group(title, values, format) {
@@ -316,6 +389,8 @@ async function load_conversation() {
     } else {
         body.messages.forEach(render_message);
     }
+    conversation_loaded = true;
+    update_send_controls();
 }
 
 async function load_updates() {
@@ -334,13 +409,11 @@ form.addEventListener("submit", async event => {
 
     error_element.classList.add("d-none");
     send_in_progress = true;
-    send_button.disabled = true;
-    input.disabled = true;
-    const status = document.createElement("p");
-    status.className = "chat-status";
-    status.textContent = "Sending your message…";
-    messages_element.append(status);
-    messages_element.scrollTop = messages_element.scrollHeight;
+    update_send_controls();
+    messages_element.querySelector(".chat-status")?.remove();
+    const user_message = { sender: "user", message };
+    render_message(user_message);
+    const status = render_thinking_indicator();
 
     try {
         const response = await fetch(endpoints.conversation, {
@@ -350,7 +423,6 @@ form.addEventListener("submit", async event => {
             body: JSON.stringify({ message })
         });
         const body = await response.json();
-        status.remove();
 
         if (!response.ok) {
             if (response.status === 429) {
@@ -361,19 +433,17 @@ form.addEventListener("submit", async event => {
         }
 
         update_cooldown(Number(body.retry_after ?? 60));
-        const empty_state = messages_element.querySelector(".chat-status");
-        empty_state?.remove();
-        render_message({ sender: "user", message });
-        render_message(body.message);
+        status.remove();
         input.value = "";
+        await render_animated_reply(body.message);
     } catch (error) {
         status.remove();
+        messages_element.querySelector(".chat-message-user:last-of-type")?.remove();
         error_element.textContent = error.message || "Couldn't send your message. Please try again.";
         error_element.classList.remove("d-none");
     } finally {
         send_in_progress = false;
-        send_button.disabled = Date.now() < cooldown_until;
-        input.disabled = Date.now() < cooldown_until;
+        update_send_controls();
         if (!input.disabled) input.focus();
     }
 });
@@ -391,6 +461,8 @@ load_conversation().catch(error => {
     status.className = "chat-status";
     status.textContent = error.message || "Couldn't load the saved conversation.";
     messages_element.replaceChildren(status);
+    error_element.textContent = "The saved conversation couldn't be loaded. Please refresh the page before sending a message.";
+    error_element.classList.remove("d-none");
 });
 
 load_updates().catch(error => {

@@ -278,8 +278,9 @@ class GeminiCustomerAssistant
             throw new RuntimeException("Customer service AI is not configured.");
         }
 
-        $model = (string) (getenv("GEMINI_MODEL") ?: "gemini-3.5-flash");
-        if (!preg_match('/^[a-zA-Z0-9._-]+$/', $model)) {
+        $primary_model = (string) (getenv("GEMINI_MODEL") ?: "gemini-3.6-flash");
+        $fallback_model = "gemini-3.1-flash-lite";
+        if (!preg_match('/^[a-zA-Z0-9._-]+$/', $primary_model)) {
             throw new RuntimeException("The configured Gemini model name is invalid.");
         }
 
@@ -309,32 +310,37 @@ class GeminiCustomerAssistant
             throw new RuntimeException("Unable to encode customer-service request.");
         }
 
-        $curl = curl_init("https://generativelanguage.googleapis.com/v1beta/models/"
-            .rawurlencode($model).":generateContent");
-        if ($curl === false) {
-            throw new RuntimeException("Unable to initialize the AI request.");
-        }
+        $model = $primary_model;
+        while (true) {
+            $curl = curl_init("https://generativelanguage.googleapis.com/v1beta/models/"
+                .rawurlencode($model).":generateContent");
+            if ($curl === false) {
+                throw new RuntimeException("Unable to initialize the AI request.");
+            }
 
-        curl_setopt_array($curl, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $request_body,
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "x-goog-api-key: ".$api_key
-            ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_TIMEOUT => 45,
-            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-            CURLOPT_SSL_VERIFYPEER => true
-        ]);
+            curl_setopt_array($curl, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $request_body,
+                CURLOPT_HTTPHEADER => [
+                    "Content-Type: application/json",
+                    "x-goog-api-key: ".$api_key
+                ],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CONNECTTIMEOUT => 8,
+                CURLOPT_TIMEOUT => 45,
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                CURLOPT_SSL_VERIFYPEER => true
+            ]);
 
-        $response_body = curl_exec($curl);
-        $status_code = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $curl_error = curl_error($curl);
-        curl_close($curl);
+            $response_body = curl_exec($curl);
+            $status_code = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $curl_error = curl_error($curl);
+            curl_close($curl);
 
-        if (!is_string($response_body) || $status_code < 200 || $status_code >= 300) {
+            if (is_string($response_body) && $status_code >= 200 && $status_code < 300) {
+                break;
+            }
+
             $provider_response = is_string($response_body) ? json_decode($response_body, true) : null;
             $provider_code = is_array($provider_response)
                 ? (string) ($provider_response["error"]["status"] ?? $provider_response["error"]["code"] ?? "")
@@ -342,6 +348,12 @@ class GeminiCustomerAssistant
             error_log("Gemini customer service request failed (HTTP ".$status_code
                 .($provider_code !== "" ? ", code ".$provider_code : "")
                 .")".($curl_error !== "" ? ": ".$curl_error : "").".");
+
+            if ($status_code === 429 && $model !== $fallback_model) {
+                error_log("Gemini customer service is retrying with fallback model ".$fallback_model.".");
+                $model = $fallback_model;
+                continue;
+            }
 
             if ($status_code === 429) {
                 throw new RuntimeException("Gemini is rate-limiting this API account. Wait a little and try again; if it continues, check the Google AI Studio project limits.");

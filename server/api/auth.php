@@ -10,6 +10,16 @@ require_once $service_path."auth.php";
 $auth = new Auth($config["db_path"]);
 require_once $service_path."sessions.php";
 $sessions = new SessionRepository($config["db_path"]);
+$forwarded_proto = strtolower(trim(explode(",", (string) ($_SERVER["HTTP_X_FORWARDED_PROTO"] ?? ""))[0]));
+$secure_cookie = (!empty($_SERVER["HTTPS"]) && strtolower((string) $_SERVER["HTTPS"]) !== "off")
+    || $forwarded_proto === "https";
+$request_origin = $_SERVER["HTTP_ORIGIN"] ?? "";
+$request_scheme = $forwarded_proto !== ""
+    ? $forwarded_proto
+    : ($secure_cookie ? "https" : "http");
+$api_origin = $request_scheme."://".($_SERVER["HTTP_HOST"] ?? "");
+$is_cross_origin = $request_origin !== "" && !hash_equals($api_origin, $request_origin);
+$cookie_same_site = $secure_cookie && $is_cross_origin ? "None" : "Lax";
 
 switch ($requested_route) {
 
@@ -93,9 +103,9 @@ switch ($requested_route) {
         setcookie("token", $token, [
             "expires" => $expire_at,
             "path" => "/",
-            "secure" => !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off",
+            "secure" => $secure_cookie,
             "httponly" => true,
-            "samesite" => "Lax"
+            "samesite" => $cookie_same_site
         ]);
 
         http_response_code(200);
@@ -116,9 +126,9 @@ switch ($requested_route) {
         setcookie("token", "", [
             "expires" => time() - 3600,
             "path" => "/",
-            "secure" => !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off",
+            "secure" => $secure_cookie,
             "httponly" => true,
-            "samesite" => "Lax"
+            "samesite" => $cookie_same_site
         ]);
 
         $sessions->deleteByToken($token_hash);

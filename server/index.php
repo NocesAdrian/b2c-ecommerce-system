@@ -20,13 +20,14 @@ if (trim($configured_origins) !== "") {
 }
 $allowed_origins = array_unique($allowed_origins);
 $request_origin = $_SERVER["HTTP_ORIGIN"] ?? "";
+header("Vary: Origin");
 if (in_array($request_origin, $allowed_origins, true)) {
     header("Access-Control-Allow-Origin: ".$request_origin);
     header("Access-Control-Allow-Credentials: true");
-    header("Vary: Origin");
 }
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Expose-Headers: Retry-After");
 
 set_exception_handler(function (Throwable $e) {
     error_log((string) $e);

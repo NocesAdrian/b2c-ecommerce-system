@@ -34,6 +34,25 @@ class UserRepository extends BaseRepository
         return (int)$record["count"] > 0;
     }
 
+    public function usernameExistsForAnotherUser(string $username, int $user_id): bool
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) AS count
+            FROM ".$this->table."
+            WHERE username = :username
+            AND id != :user_id;
+        ");
+
+        $stmt->execute([
+            "username" => $username,
+            "user_id" => $user_id
+        ]);
+
+        $record = $stmt->fetch();
+
+        return (int) $record["count"] > 0;
+    }
+
     public function countCustomers(): int
     {
         $stmt = $this->db->query("

@@ -73,7 +73,7 @@ switch ($requested_route) {
             exit(-1);
         }
 
-        if ($username !== $current["username"] && $users->usernameExist($username)) {
+        if ($username !== $current["username"] && $users->usernameExistsForAnotherUser($username, $user_id)) {
             http_response_code(409);
             echo json_encode(["error" => "User exist"]);
             exit(-1);
@@ -129,8 +129,14 @@ switch ($requested_route) {
             exit(-1);
         }
 
+        if (mb_strlen($username) < 4 || mb_strlen($username) > 255) {
+            http_response_code(400);
+            echo json_encode(["error" => "Username must contain between 4 and 255 characters"]);
+            exit(-1);
+        }
+
         // the new username must not belong to someone else
-        if ($username !== $current["username"] && $users->usernameExist($username)) {
+        if ($username !== $current["username"] && $users->usernameExistsForAnotherUser($username, $id)) {
             http_response_code(409);
             echo json_encode(["error" => "User exist"]);
             exit(-1);

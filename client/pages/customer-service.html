@@ -13,7 +13,7 @@
   <link href="../css/app-polish.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="customer-service-body">
   <header class="app-nav sticky-top">
     <div class="container">
       <div class="app-nav-row">
@@ -67,33 +67,27 @@
     </div>
   </div>
 
-  <main class="container customer-service-page">
-    <section class="service-heading">
-      <p class="eyebrow mb-2">Here to help</p>
-      <h2 class="section-title mb-2">Chat with Ain</h2>
-      <p class="text-muted-d mb-0">Ask about your orders, the latest products, or how to use the store.</p>
-    </section>
-
+  <main class="customer-service-page">
     <section class="service-layout" aria-label="Customer service chat">
-      <aside class="service-context">
-        <div class="service-context-icon"><i class="bi bi-stars"></i></div>
-        <h3>Store updates</h3>
-        <p>These details come from the store records. Ain uses them to answer your questions.</p>
-        <div id="service-updates" class="service-updates" aria-live="polite">
-          <p class="service-muted">Loading your latest updates…</p>
-        </div>
-        <p class="service-disclaimer">
-          Replies are AI-generated and may be mistaken. Check your order history for the latest status.
-        </p>
-      </aside>
-
       <section class="service-chat" aria-labelledby="chat-heading">
         <div class="service-chat-heading">
           <div class="service-chat-avatar"><i class="bi bi-chat-heart"></i></div>
-          <div>
-            <h3 id="chat-heading">Ain</h3>
-            <p class="mb-0">A thoughtful guide to your store updates. Your chat is saved to your account.</p>
+          <div class="service-chat-title">
+            <h2 id="chat-heading">Chat with Ain</h2>
+            <p class="mb-0">Ask about your orders, products, or how to use the store. Chat is saved to your account.</p>
           </div>
+          <details class="service-updates-details">
+            <summary><i class="bi bi-stars" aria-hidden="true"></i><span>Store updates</span></summary>
+            <div class="service-updates-panel">
+              <p class="service-muted">These details come from the store records. Ain uses them to answer your questions.</p>
+              <div id="service-updates" class="service-updates" aria-live="polite">
+                <p class="service-muted">Loading your latest updates…</p>
+              </div>
+              <p class="service-disclaimer">
+                Replies are AI-generated and may be mistaken. Check your order history for the latest status.
+              </p>
+            </div>
+          </details>
         </div>
         <div id="chat-messages" class="chat-messages" aria-live="polite" aria-label="Conversation">
           <p class="chat-status">Loading conversation…</p>
@@ -101,9 +95,9 @@
         <p id="chat-error" class="chat-error d-none" role="alert"></p>
         <form id="chat-form" class="chat-form">
           <label class="visually-hidden" for="chat-input">Your message</label>
-          <textarea id="chat-input" class="form-control" rows="2" maxlength="2000"
+          <textarea id="chat-input" class="form-control" rows="2" maxlength="2000" disabled
             placeholder="Ask about an order or product…" required></textarea>
-          <button class="btn btn-d chat-send" id="chat-send" type="submit" aria-label="Send message">
+          <button class="btn btn-d chat-send" id="chat-send" type="submit" aria-label="Send message" disabled>
             <i class="bi bi-send"></i><span class="visually-hidden">Send</span>
           </button>
         </form>
