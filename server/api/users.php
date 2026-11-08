@@ -119,7 +119,13 @@ switch ($requested_route) {
 
         $id = $users->validateID($body["id"] ?? '', "users");
         $username = $users->validateString($body["username"] ?? '');
-        $role_id = $users->validateID($body["role_id"] ?? '', "roles");
+        $role_id = filter_var($body["role_id"] ?? null, FILTER_VALIDATE_INT);
+
+        if ($role_id === false || !in_array($role_id, [1, 2], true)) {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid role"]);
+            exit(-1);
+        }
 
         $current = $users->get($id);
 
